@@ -8,13 +8,23 @@ Modulo bot - Mantem as funções que gerenciam o bot
 import os
 import logging
 import locale
+import pytz
+from datetime import datetime
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from dasbot.corona import CoronaData, BrazilData, BrazilStatesData, BrazilChart
+from dasbot.corona import GovBR, GovStates, BingData, br_ufs, SeriesChart
+
 
 # Enable logging
 logger = logging.getLogger(__name__)
-corona = CoronaData()
+
+corona_br = BingData()
+
+
+def check_refresh_data():
+    today = datetime.now().replace(tzinfo=pytz.UTC)
+    if corona_br.last_date is None or corona_br.last_date.replace(tzinfo=pytz.UTC) < today:
+        corona_br.refresh()
 
 
 def start(update, context):
@@ -44,44 +54,48 @@ def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
-def _stat_message(br: BrazilData):
-    if corona.last_br_date:
-        return "Mortes: *{:n}*, Confirmados: *{:n}*, Suspeitos: *{:n}*, Descartados: *{:n}* - em _{}_".\
-            format(br.death, br.confirmed, br.suspect, br.refused, corona.last_br_date)
-    else:
-        return "Não há dados disponíveis"
-
-
 def stats(update, context):
     logger.info('Arrive /stats command "%s"', update.effective_message)
-    update.message.reply_markdown(_stat_message(BrazilData(corona.brazil)))
+    check_refresh_data()
+    update.message.reply_markdown(corona_br.description)
 
 
 def general(update, context):
     if context.match:
         logger.info('Arrive UF message "%s"', update.effective_message)
-        if context.match.group(0) == "BR":
-            msg = _stat_message(BrazilData(corona.brazil))
-            update.message.reply_markdown(msg)
+        check_refresh_data()
+        uf = context.match.group(0)
+        if uf == "BR":
+            update.message.reply_markdown(corona_br.description)
+        elif uf in br_ufs:
+            corona_states = GovStates(uf)
+            corona_states.refresh()
+            update.message.reply_markdown(corona_states.description)
         else:
-            msg = _stat_message(BrazilStatesData(corona.brazil, context.match.group(0)))
-            update.message.reply_markdown(msg)
+            update.message.reply_text("UF não reconhecida. Tente novamente.")
     else:
         echo(update, context)
 
 
 def refresh(update, context):
-    chart = BrazilChart(corona.brazil_series())
-    if corona.refresh():
-        image = chart.image()
-        caption = "Atualizado: {}".format(corona.last_br_date)
-        context.bot.send_photo("@corona_br", image, caption=caption)
-        image.seek(0)
-        msg = _stat_message(BrazilData(corona.brazil))
-        context.bot.send_message("@corona_br", msg, parse_mode="Markdown")
-        update.message.reply_photo(photo=image, caption=caption)
-    else:
-        update.message.reply_message("Não há atualizações")
+    # br = GovBR()
+    # br.refresh()
+    # chart = SeriesChart(br)
+    # image = chart.image()
+    # caption = "Atualizado: {}".format(corona_br.last_date.strftime("%d-%m-%Y %H:%M"))
+
+    # context.bot.send_photo("@corona_br", image, caption=caption)
+    # image.seek(0)
+    # msg = corona_br.description
+    # context.bot.send_message("@corona_br", msg, parse_mode="Markdown")
+
+    update.message.reply_photo(photo=image, caption=caption)
+
+
+def channel(update, context):
+    check_refresh_data()
+    msg = corona_br.description
+    context.bot.send_message("@corona_br", msg, parse_mode="Markdown")
 
 
 def main():
@@ -98,7 +112,8 @@ def main():
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("stats", stats))
     dp.add_handler(CommandHandler("refresh", refresh))
-    dp.add_handler(MessageHandler(Filters.regex(r"[A-Z]{2}") & ~Filters.update.channel_post, general))
+    dp.add_handler(CommandHandler("channel", channel))
+    dp.add_handler(MessageHandler(Filters.regex(r"^[A-Z]{2}") & ~Filters.update.channel_post, general))
 
     # echo das mensagens que não são comandos
     dp.add_handler(MessageHandler(Filters.text & ~Filters.update.channel_post, echo))

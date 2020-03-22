@@ -12,11 +12,14 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 from datetime import datetime
+from dateutil import parser
 from urllib.request import urlopen, Request
+from urllib.error import URLError
 from bs4 import BeautifulSoup
 from PIL import Image
 
-_br_ufs = {
+
+br_ufs = {
  'RO': {'uid': '11', 'name': 'Rondônia'},
  'AC': {'uid': '12', 'name': 'Acre'},
  'AM': {'uid': '13', 'name': 'Amazonas'},
@@ -47,15 +50,19 @@ _br_ufs = {
 }
 
 
-def _http_get(url):
+def _http_get(url, expected=200):
     """return a request object from a url using http get
     """
     hdr = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
+        'Accept': 'text/html,application/xhtml+xml,application/xml,application/json;q=0.9,*/*;q=0.8'}
 
-    req = Request(url, headers=hdr)
-    return urlopen(req)
+    try:
+        req = Request(url, headers=hdr)
+        response = urlopen(req)
+        return response if response.getcode() == expected else None
+    except URLError:
+        return None
 
 
 def _database_script_matcher(tag):
@@ -67,71 +74,229 @@ def _database_script_matcher(tag):
            tag['src'].startswith('http://plataforma.saude.gov.br/novocoronavirus/resources/scripts/database.js')
 
 
-class BrazilData(object):
-    def __init__(self, data):
-        self._data = data
+class CoronaData(object):
 
-    def _total(self, key):
-        total = [v.get(key, 0) for k, v in self._data.items()]
-        return sum(total)
-
-    @property
-    def confirmed(self):
-        return self._total("cases")
+    def __init__(self):
+        self._raw_data = {}
+        self._version = 0
+        self._has_new_data = False
+        self._last_date = None
+        self._data_source = ""
+        self._region = ""
 
     @property
-    def suspect(self):
-        return self._total("suspects")
+    def data_source(self):
+        return self._data_source
 
     @property
-    def refused(self):
-        return self._total("refuses")
+    def description(self):
+        if self._last_date:
+            return "{}: {} - Fonte: {} em {}".\
+                format(self.region, self._get_cases(), self.data_source, self.last_date.strftime("%d-%m-%Y %H:%M"))
+        else:
+            return "{}: Fonte: {} - Não há dados disponíveis".format(self.region, self.data_source)
 
     @property
-    def death(self):
-        return self._total("deaths")
+    def last_date(self):
+        return self._last_date
+
+    @property
+    def region(self):
+        return self._region
+
+    def refresh(self):
+        self._has_new_data = False
+        if self._load_data():
+            self._has_new_data = True
+            self._update_stats()
+        return self._has_new_data
+
+    def get_data(self):
+        """Implementado na subclasse para retornar os dados em um array
+        com os seguintes valores nessa ordem: [confirmados, mortes, recuperados]
+        A data é informada pela propriedade last_date
+        """
+        return None
+
+    def get_series(self):
+        """Implementado na subclasse para retornar a series de dados padrão por data
+        A serie é um dicionario com a chave sendo a data e o valor sendo um
+        array no padrão do _get_data
+        """
+        return None
+
+    def _get_cases(self):
+        """Implementado na subclasse para retornar os dados da fonte"""
+        return None
+
+    def _update_stats(self):
+        """processa os dados coletados"""
+        pass
+
+    def _load_data(self):
+        """Carrega os dados e retorna True se houver uma nova versão disponível"""
+        pass
 
 
-class BrazilStatesData(BrazilData):
+class BingData(CoronaData):
 
-    def __init__(self, data, state):
-        super().__init__(data)
-        value = _br_ufs.get(state, None)
-        self.uid = value.get("uid") if value else None
+    @staticmethod
+    def categories(): return {
+        "totalConfirmed": "Confirmados",
+        "totalDeaths": "Mortes",
+        "totalRecovered": "Recuperados"
+    }
 
-    def _total(self, key):
-        if self.uid:
-            return self._data.get(self.uid).get(key, 0)
-        return 0
+    def __init__(self):
+        super().__init__()
+        self._data_source = "Bing.com"
+        self._region = "Brasil"
+
+    def get_data(self):
+        data_keys = ["totalConfirmed", "totalDeaths", "totalRecovered"]
+        return [self._bing.get(k, 0) for k in data_keys]
+
+    def _get_cases(self):
+        cases = []
+        for k, v in BingData.categories().items():
+            cases.append("{}: *{:n}*".format(v, self._bing.get(k)))
+        return ", ".join(cases)
+
+    def _update_stats(self):
+        self._last_date = datetime.fromtimestamp(self._version, pytz.timezone("America/Sao_Paulo"))
+        self._bing = [k for k in self._raw_data["areas"] if k["id"] == "brazil"][0]
+
+    def _load_data(self):
+        response = _http_get("https://bing.com/covid/data")
+        if response:
+            data = json.loads(response.read())
+            version = parser.parse(data["lastUpdated"]).timestamp()
+            if version != self._version:
+                self._version = version
+                self._raw_data = data
+                return True
+            return False
+
+        with open('bing_cases.json', 'r', encoding='utf-8') as f:
+            self._raw_data = json.load(f)
+        return self._last_date is None
 
 
-class BrazilChart(object):
+class GovBR(CoronaData):
 
-    def __init__(self, data):
-        self.data = data
+    @staticmethod
+    def categories(): return {
+        "cases": "Confirmados",
+        "deaths": "Mortos",
+        "suspects": "Suspeitos",
+        "refuses": "Descartados",
+    }
+
+    def __init__(self):
+        super().__init__()
+        self._data_source = "Ministério da Saúde"
+        self._region = "Brasil"
+        self._br = {}
+        self._uid = None
+
+    def get_series(self):
+        result = {}
+        for item in self._raw_data["brazil"]:
+            date = datetime.strptime("{}".format(item.get("date")), "%d/%m/%Y")
+            br = {}
+            for v in item.get("values"):
+                if self._uid is None or v.get("uid") == self._uid:
+                    for k in GovBR.categories():
+                        br[k] = br.get(k, 0) + v.get(k, 0)
+            result[date] = [br["cases"], br["deaths"], 0]
+        return result
+
+    def get_data(self):
+        """Nos dados do ministério não tem numeros de recuperados"""
+        return [self._br["cases"], self._br["deaths"], 0]
+
+    def _get_cases(self):
+        cases = []
+        for k, v in GovBR.categories().items():
+            cases.append("{}: *{:n}*".format(v, self._br.get(k, 0)))
+        return ", ".join(cases)
+
+    def _update_stats(self):
+        """Nos dados do MS os valores corretos do brasil estão no último item somando todos os estados"""
+        self._br = {}
+        if self._raw_data:
+            item = self._raw_data["brazil"][-1]
+            self._last_date = datetime.strptime("{} {}".format(item.get("date"), item.get("time")), "%d/%m/%Y %H:%M")
+            for v in item.get("values"):
+                if self._uid is None or v.get("uid") == self._uid:
+                    for k in GovBR.categories():
+                        self._br[k] = self._br.get(k, 0) + v.get(k, 0)
+
+    def _load_data(self):
+        response = _http_get("http://plataforma.saude.gov.br/novocoronavirus")
+        if response:
+            main_page = BeautifulSoup(response, 'html.parser')
+            script_tag = main_page.find(_database_script_matcher)
+            if script_tag:
+                script_url = script_tag['src']
+                if script_url:
+                    version = re.findall(r"[?]v=(\d+)", script_url)[0]
+                    if version != self._version:
+                        with _http_get(script_url) as f:
+                            data = f.read().decode('utf-8')
+                        p = re.compile(r"\{.+", re.MULTILINE)
+                        data = json.loads(p.findall(data)[0])
+                        self._raw_data = data
+                        self._version = version
+                        return True
+                    return False
+
+        with open('br_cases.json', 'r', encoding='utf-8') as f:
+            self._raw_data = json.load(f)
+        return self._last_date is None
+
+
+class GovStates(GovBR):
+
+    def __init__(self, state):
+        super().__init__()
+        self.state = br_ufs.get(state, None)
+        if self.state:
+            self._region = self.state.get("name")
+            self._uid = int(self.state.get("uid"))
+
+
+class SeriesChart(object):
+
+    def __init__(self, corona_data: CoronaData):
+        self.source = corona_data
 
     def image(self):
+        categories = {
+            0: "Confirmados",
+            1: "Mortos",
+            2: "Recuperados"
+        }
+
         x_axis = []
         y_axis = {}
-
-        for k in CoronaData.categories():
+        for k in categories:
             y_axis[k] = []
-        for date in self.data:
+
+        for date, values in self.source.get_series().items():
             x_axis.append(date)
-            for k in CoronaData.categories():
-                y_axis[k].append(sum([s.get(k, 0) for s in self.data[date]]))
+            for k in categories:
+                y_axis[k].append(values[k])
 
         fig = plt.figure(figsize=(10, 5))
-        plt.plot(x_axis, y_axis["suspects"], label="Suspeitos")
-        plt.plot(x_axis, y_axis["refuses"], label="Descartados")
-        plt.plot(x_axis, y_axis["cases"], label="Confirmados")
-        plt.plot(x_axis, y_axis["deaths"], label="Mortes")
+        for k, v in categories.items():
+            plt.plot(x_axis, y_axis[k], label=v)
         ax = plt.gca()
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%d-%b"))
 
         plt.xlabel('Data')
         plt.ylabel('Quantidade')
-        plt.title('Contaminação pelo COVID-19')
+        plt.title("Contaminação pelo COVID-19 : {}".format(self.source.region))
         plt.legend()
 
         file = io.BytesIO()
@@ -143,90 +308,3 @@ class BrazilChart(object):
         image.save(bio, 'PNG')
         bio.seek(0)
         return bio
-
-
-class CoronaData(object):
-
-    @staticmethod
-    def categories(): return ["suspects", "refuses", "cases", "deaths"]
-
-    def __init__(self):
-        self.url = "http://plataforma.saude.gov.br/novocoronavirus"
-        self._raw_data = {"world": [], "brazil": []}
-        self._br = {}
-        self._version = 0
-        self._has_new_data = True
-        self._last_br_date = None
-        self.refresh()
-
-    @property
-    def version(self):
-        ms = float(self._version)
-        time = datetime.fromtimestamp(ms, pytz.timezone("America/Sao_Paulo"))
-        return time.strftime("%d-%m-%Y %H:%M")
-
-    @property
-    def last_br_date(self):
-        if self._last_br_date:
-            return self._last_br_date.strftime("%d-%m-%Y %H:%M")
-        else:
-            return None
-
-    @property
-    def brazil(self):
-        return self._br
-
-    def world(self):
-        pass
-
-    def brazil_series(self):
-        result = {}
-        data = self._raw_data.get('brazil')
-        for item in data:
-            date = datetime.strptime("{}".format(item.get("date")), "%d/%m/%Y")
-            result[date] = []
-            for v in item.get("values"):
-                uf = {"uid": v.get("uid")}
-                for k in CoronaData.categories():
-                    uf[k] = v.get(k, 0)
-                result[date].append(uf)
-        return result
-
-    def refresh(self):
-        self._load_data()
-        if self._has_new_data:
-            self._br = {v.get("uid"): dict() for k, v in _br_ufs.items()}
-            self._update_stats_br()
-            return True
-        return True
-
-    def _update_stats_br(self):
-        items = self._raw_data.get('brazil')
-        if items:
-            item = items[-1]
-            self._last_br_date = datetime.strptime("{} {}".format(item.get("date"), item.get("time")), "%d/%m/%Y %H:%M")
-            for v in item.get("values"):
-                uf = self._br.get(str(v.get("uid")))
-                for k in CoronaData.categories():
-                    uf[k] = uf.get(k, 0) + v.get(k, 0)
-
-    def _load_data(self):
-        """ get corona virus data from BR gov site
-        and return as object
-        """
-        main_page = BeautifulSoup(_http_get(self.url), 'html.parser')
-        script_tag = main_page.find(_database_script_matcher)
-        if script_tag:
-            script_url = script_tag['src']
-            if script_url:
-                version = re.findall(r"[?]v=(\d+)", script_url)[0]
-                if version != self._version:
-                    with _http_get(script_url) as f:
-                        data = f.read().decode('utf-8')
-                    p = re.compile(r"\{.+", re.MULTILINE)
-                    self._raw_data = json.loads(p.findall(data)[0])
-                    self._version = version
-                    self._has_new_data = True
-        else:
-            with open('casos.json', 'r', encoding='utf-8') as f:
-                self._raw_data = json.load(f)

@@ -1,0 +1,3736 @@
+{
+	"brazil": [
+		{
+			"date": "30/01/2020",
+			"time": "16:00",
+			"values": [
+				{
+					"uid": 31,
+					"suspects": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 1
+				},
+				{
+					"uid": 42,
+					"refuses": 2
+				},
+				{
+					"uid": 35,
+					"suspects": 3,
+					"refuses": 1
+				},
+				{
+					"uid": 43,
+					"suspects": 2,
+					"refuses": 2
+				},
+				{
+					"uid": 41,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 23,
+					"suspects": 1
+				}
+			]
+		},
+		{
+			"date": "31/01/2020",
+			"time": "12:00",
+			"values": [
+				{
+					"uid": 23,
+					"suspects": 1
+				},
+				{
+					"uid": 31,
+					"suspects": 1
+				},
+				{
+					"uid": 33,
+					"refuses": 1
+				},
+				{
+					"uid": 35,
+					"suspects": 7,
+					"refuses": 2
+				},
+				{
+					"uid": 41,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 42,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 43,
+					"suspects": 2,
+					"refuses": 3
+				}
+			]
+		},
+		{
+			"date": "01/02/2020",
+			"time": "12:00",
+			"values": [
+				{
+					"uid": 23,
+					"suspects": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"refuses": 1
+				},
+				{
+					"uid": 35,
+					"suspects": 8,
+					"refuses": 2
+				},
+				{
+					"uid": 41,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 42,
+					"suspects": 2,
+					"refuses": 2
+				},
+				{
+					"uid": 43,
+					"suspects": 4,
+					"refuses": 3
+				}
+			]
+		},
+		{
+			"date": "02/02/2020",
+			"time": "12:00",
+			"values": [
+				{
+					"uid": 23,
+					"suspects": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"refuses": 1
+				},
+				{
+					"uid": 35,
+					"suspects": 8,
+					"refuses": 2
+				},
+				{
+					"uid": 41,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 42,
+					"suspects": 2,
+					"refuses": 2
+				},
+				{
+					"uid": 43,
+					"suspects": 4,
+					"refuses": 3
+				}
+			]
+		},
+		{
+			"date": "03/02/2020",
+			"time": "16:00",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 35,
+					"suspects": 7,
+					"refuses": 3
+				},
+				{
+					"uid": 41,
+					"refuses": 2
+				},
+				{
+					"uid": 42,
+					"suspects": 2,
+					"refuses": 2
+				},
+				{
+					"uid": 43,
+					"suspects": 4,
+					"refuses": 3
+				}
+			]
+		},
+		{
+			"date": "04/02/2020",
+			"time": "15:00",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 35,
+					"suspects": 6,
+					"refuses": 5
+				},
+				{
+					"uid": 41,
+					"refuses": 2
+				},
+				{
+					"uid": 42,
+					"suspects": 2,
+					"refuses": 2
+				},
+				{
+					"uid": 43,
+					"suspects": 4,
+					"refuses": 3
+				}
+			]
+		},
+		{
+			"date": "05/02/2020",
+			"time": "12:00",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 35,
+					"suspects": 4,
+					"refuses": 9
+				},
+				{
+					"uid": 41,
+					"suspects": 0,
+					"refuses": 2
+				},
+				{
+					"uid": 42,
+					"suspects": 1,
+					"refuses": 3
+				},
+				{
+					"uid": 43,
+					"suspects": 5,
+					"refuses": 3
+				}
+			]
+		},
+		{
+			"date": "06/02/2020",
+			"time": "15:30",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 35,
+					"suspects": 3,
+					"refuses": 10
+				},
+				{
+					"uid": 41,
+					"refuses": 2
+				},
+				{
+					"uid": 42,
+					"suspects": 1,
+					"refuses": 3
+				},
+				{
+					"uid": 43,
+					"suspects": 3,
+					"refuses": 5
+				}
+			]
+		},
+		{
+			"date": "06/02/2020",
+			"time": "15:30",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 35,
+					"suspects": 3,
+					"refuses": 10
+				},
+				{
+					"uid": 41,
+					"refuses": 2
+				},
+				{
+					"uid": 42,
+					"suspects": 1,
+					"refuses": 3
+				},
+				{
+					"uid": 43,
+					"suspects": 3,
+					"refuses": 5
+				}
+			]
+		},
+		{
+			"date": "07/02/2020",
+			"time": "15:30",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 35,
+					"suspects": 3,
+					"refuses": 11
+				},
+				{
+					"uid": 41,
+					"refuses": 2
+				},
+				{
+					"uid": 42,
+					"suspects": 1,
+					"refuses": 3
+				},
+				{
+					"uid": 43,
+					"suspects": 2,
+					"refuses": 6
+				}
+			]
+		},
+		{
+			"date": "08/02/2020",
+			"time": "13:30",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 35,
+					"suspects": 2,
+					"refuses": 13
+				},
+				{
+					"uid": 41,
+					"refuses": 2
+				},
+				{
+					"uid": 42,
+					"suspects": 1,
+					"refuses": 3
+				},
+				{
+					"uid": 43,
+					"suspects": 3,
+					"refuses": 6
+				}
+			]
+		},
+		{
+			"date": "09/02/2020",
+			"time": "13:30",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 2,
+					"refuses": 2
+				},
+				{
+					"uid": 35,
+					"suspects": 3,
+					"refuses": 13
+				},
+				{
+					"uid": 41,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 42,
+					"suspects": 1,
+					"refuses": 3
+				},
+				{
+					"uid": 43,
+					"suspects": 3,
+					"refuses": 6
+				}
+			]
+		},
+		{
+			"date": "10/02/2020",
+			"time": "15:30",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 1,
+					"refuses": 3
+				},
+				{
+					"uid": 35,
+					"suspects": 3,
+					"refuses": 13
+				},
+				{
+					"uid": 41,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 1,
+					"refuses": 8
+				}
+			]
+		},
+		{
+			"date": "11/02/2020",
+			"time": "16:00",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 2,
+					"refuses": 3
+				},
+				{
+					"uid": 35,
+					"suspects": 3,
+					"refuses": 14
+				},
+				{
+					"uid": 41,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 1,
+					"refuses": 8
+				}
+			]
+		},
+		{
+			"date": "12/02/2020",
+			"time": "16:00",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 2,
+					"refuses": 3
+				},
+				{
+					"uid": 35,
+					"suspects": 6,
+					"refuses": 14
+				},
+				{
+					"uid": 41,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 1,
+					"refuses": 8
+				}
+			]
+		},
+		{
+			"date": "13/02/2020",
+			"time": "16:00",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 2
+				},
+				{
+					"uid": 33,
+					"refuses": 5
+				},
+				{
+					"uid": 35,
+					"suspects": 3,
+					"refuses": 17
+				},
+				{
+					"uid": 41,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 2,
+					"refuses": 8
+				},
+				{
+					"uid": 53,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "14/02/2020",
+			"time": "16:00",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 2
+				},
+				{
+					"uid": 33,
+					"refuses": 5
+				},
+				{
+					"uid": 35,
+					"suspects": 1,
+					"refuses": 20
+				},
+				{
+					"uid": 41,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 2,
+					"refuses": 8
+				},
+				{
+					"uid": 53,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "15/02/2020",
+			"time": "14:00",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 2
+				},
+				{
+					"uid": 33,
+					"refuses": 5
+				},
+				{
+					"uid": 35,
+					"suspects": 2,
+					"refuses": 20
+				},
+				{
+					"uid": 41,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 1,
+					"refuses": 9
+				},
+				{
+					"uid": 53,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "16/02/2020",
+			"time": "12:00",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 2
+				},
+				{
+					"uid": 33,
+					"refuses": 5
+				},
+				{
+					"uid": 35,
+					"suspects": 2,
+					"refuses": 20
+				},
+				{
+					"uid": 41,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 1,
+					"refuses": 9
+				},
+				{
+					"uid": 53,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "17/02/2020",
+			"time": "15:50",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 2
+				},
+				{
+					"uid": 33,
+					"refuses": 5
+				},
+				{
+					"uid": 35,
+					"suspects": 2,
+					"refuses": 20
+				},
+				{
+					"uid": 41,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 1,
+					"refuses": 9
+				},
+				{
+					"uid": 53,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "18/02/2020",
+			"time": "15:50",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 2
+				},
+				{
+					"uid": 33,
+					"refuses": 5
+				},
+				{
+					"uid": 35,
+					"suspects": 4,
+					"refuses": 20
+				},
+				{
+					"uid": 41,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 1,
+					"refuses": 9
+				},
+				{
+					"uid": "53",
+					"suspects": 0,
+					"confirmado": 0,
+					"refuses": 1,
+					"deads": 0,
+					"local": false
+				}
+			]
+		},
+		{
+			"date": "19/02/2020",
+			"time": "15:50",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 2
+				},
+				{
+					"uid": 33,
+					"refuses": 5
+				},
+				{
+					"uid": 35,
+					"suspects": 1,
+					"refuses": 23
+				},
+				{
+					"uid": 41,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 1,
+					"refuses": 9
+				},
+				{
+					"uid": 53,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "20/02/2020",
+			"time": "15:50",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 2
+				},
+				{
+					"uid": 33,
+					"refuses": 5
+				},
+				{
+					"uid": 35,
+					"suspects": 1,
+					"refuses": 24
+				},
+				{
+					"uid": 41,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"refuses": 10
+				},
+				{
+					"uid": 53,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "21/02/2020",
+			"time": "14:30",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 2
+				},
+				{
+					"uid": 33,
+					"suspects": 1,
+					"refuses": 5
+				},
+				{
+					"uid": 35,
+					"refuses": 25
+				},
+				{
+					"uid": 41,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"refuses": 10
+				},
+				{
+					"uid": 53,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "22/02/2020",
+			"time": "13:40",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 2
+				},
+				{
+					"uid": 33,
+					"suspects": 1,
+					"refuses": 6
+				},
+				{
+					"uid": 35,
+					"refuses": 25
+				},
+				{
+					"uid": 41,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"refuses": 10
+				},
+				{
+					"uid": 53,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "23/02/2020",
+			"time": "12:30",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 2
+				},
+				{
+					"uid": 33,
+					"suspects": 1,
+					"refuses": 7
+				},
+				{
+					"uid": 35,
+					"suspects": 1,
+					"refuses": 25
+				},
+				{
+					"uid": 41,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"refuses": 10
+				},
+				{
+					"uid": 53,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "24/02/2020",
+			"time": "12:25",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 2
+				},
+				{
+					"uid": 33,
+					"suspects": 1,
+					"refuses": 7
+				},
+				{
+					"uid": 35,
+					"suspects": 3,
+					"refuses": 26
+				},
+				{
+					"uid": 41,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"refuses": 10
+				},
+				{
+					"uid": 53,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "25/02/2020",
+			"time": "13:50",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 2
+				},
+				{
+					"uid": 33,
+					"refuses": 8
+				},
+				{
+					"uid": 35,
+					"suspects": 4,
+					"refuses": 26
+				},
+				{
+					"uid": 41,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"refuses": 10
+				},
+				{
+					"uid": 53,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "25/02/2020",
+			"time": "13:50",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 31,
+					"refuses": 2
+				},
+				{
+					"uid": 33,
+					"refuses": 8
+				},
+				{
+					"uid": 35,
+					"suspects": 4,
+					"refuses": 26
+				},
+				{
+					"uid": 41,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"refuses": 10
+				},
+				{
+					"uid": 53,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "26/02/2020",
+			"time": "11:30",
+			"values": [
+				{
+					"uid": 23,
+					"refuses": 1
+				},
+				{
+					"uid": 29,
+					"refuses": 2
+				},
+				{
+					"uid": 25,
+					"suspects": 1
+				},
+				{
+					"uid": 26,
+					"suspects": 1
+				},
+				{
+					"uid": 31,
+					"suspects": 2,
+					"refuses": 2
+				},
+				{
+					"uid": 32,
+					"suspects": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 2,
+					"refuses": 8
+				},
+				{
+					"uid": 35,
+					"cases": 1,
+					"suspects": 11,
+					"refuses": 28
+				},
+				{
+					"uid": 41,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"suspects": 2,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"refuses": 10
+				},
+				{
+					"uid": 53,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "27/02/2020",
+			"time": "17:00",
+			"values": [
+				{
+					"uid": 23,
+					"suspects": 5,
+					"refuses": 1
+				},
+				{
+					"uid": 24,
+					"suspects": 4
+				},
+				{
+					"uid": 25,
+					"suspects": 1
+				},
+				{
+					"uid": 26,
+					"suspects": 3
+				},
+				{
+					"uid": 27,
+					"suspects": 1
+				},
+				{
+					"uid": 29,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 31,
+					"suspects": 5,
+					"refuses": 3
+				},
+				{
+					"uid": 32,
+					"suspects": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 9,
+					"refuses": 8
+				},
+				{
+					"uid": 35,
+					"cases": 1,
+					"suspects": 55,
+					"refuses": 28
+				},
+				{
+					"uid": 41,
+					"suspects": 5,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"suspects": 8,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 24,
+					"refuses": 10
+				},
+				{
+					"uid": 50,
+					"suspects": 2
+				},
+				{
+					"uid": 52,
+					"suspects": 3
+				},
+				{
+					"uid": 53,
+					"suspects": 5,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "28/02/2020",
+			"time": "16:10",
+			"values": [
+				{
+					"uid": 23,
+					"suspects": 6,
+					"refuses": 2
+				},
+				{
+					"uid": 24,
+					"suspects": 3,
+					"refuses": 2
+				},
+				{
+					"uid": 25,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 26,
+					"suspects": 5,
+					"refuses": 2
+				},
+				{
+					"uid": 27,
+					"suspects": 1
+				},
+				{
+					"uid": 29,
+					"suspects": 9,
+					"refuses": 4
+				},
+				{
+					"uid": 31,
+					"suspects": 17,
+					"refuses": 3
+				},
+				{
+					"uid": 32,
+					"suspects": 2,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 19,
+					"refuses": 8
+				},
+				{
+					"uid": 35,
+					"suspects": 66,
+					"cases": 1,
+					"refuses": 30
+				},
+				{
+					"uid": 41,
+					"suspects": 5,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"suspects": 9,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 27,
+					"refuses": 10
+				},
+				{
+					"uid": 50,
+					"suspects": 2
+				},
+				{
+					"uid": 52,
+					"suspects": 5
+				},
+				{
+					"uid": 53,
+					"suspects": 5,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "29/02/2020",
+			"time": "19:05",
+			"values": [
+				{
+					"uid": 23,
+					"suspects": 6,
+					"refuses": 2
+				},
+				{
+					"uid": 24,
+					"suspects": 3,
+					"refuses": 2
+				},
+				{
+					"uid": 25,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 26,
+					"suspects": 5,
+					"refuses": 2
+				},
+				{
+					"uid": 27,
+					"suspects": 1
+				},
+				{
+					"uid": 29,
+					"suspects": 9,
+					"refuses": 4
+				},
+				{
+					"uid": 31,
+					"suspects": 17,
+					"refuses": 3
+				},
+				{
+					"uid": 32,
+					"suspects": 2,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 19,
+					"refuses": 8
+				},
+				{
+					"uid": 35,
+					"suspects": 91,
+					"cases": 2,
+					"refuses": 38
+				},
+				{
+					"uid": 41,
+					"suspects": 5,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"suspects": 9,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 27,
+					"refuses": 10
+				},
+				{
+					"uid": 50,
+					"suspects": 2
+				},
+				{
+					"uid": 52,
+					"suspects": 5
+				},
+				{
+					"uid": 53,
+					"suspects": 5,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "01/03/2020",
+			"time": "15:05",
+			"values": [
+				{
+					"uid": 23,
+					"suspects": 6,
+					"refuses": 2
+				},
+				{
+					"uid": 24,
+					"suspects": 3,
+					"refuses": 2
+				},
+				{
+					"uid": 25,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 26,
+					"suspects": 5,
+					"refuses": 2
+				},
+				{
+					"uid": 27,
+					"suspects": 1
+				},
+				{
+					"uid": 29,
+					"suspects": 9,
+					"refuses": 4
+				},
+				{
+					"uid": 31,
+					"suspects": 17,
+					"refuses": 3
+				},
+				{
+					"uid": 32,
+					"suspects": 2,
+					"refuses": 1
+				},
+				{
+					"uid": 33,
+					"suspects": 19,
+					"refuses": 8
+				},
+				{
+					"uid": 35,
+					"suspects": 136,
+					"cases": 2,
+					"refuses": 48
+				},
+				{
+					"uid": 41,
+					"suspects": 5,
+					"refuses": 3
+				},
+				{
+					"uid": 42,
+					"suspects": 9,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 27,
+					"refuses": 10
+				},
+				{
+					"uid": 50,
+					"suspects": 2
+				},
+				{
+					"uid": 52,
+					"suspects": 5
+				},
+				{
+					"uid": 53,
+					"suspects": 5,
+					"refuses": 1
+				}
+			]
+		},
+		{
+			"date": "02/03/2020",
+			"time": "16:30",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 1
+				},
+				{
+					"uid": 13,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 15,
+					"suspects": 2,
+					"refuses": 2
+				},
+				{
+					"uid": 21,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 22,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 23,
+					"suspects": 6,
+					"refuses": 6
+				},
+				{
+					"uid": 24,
+					"suspects": 2,
+					"refuses": 6
+				},
+				{
+					"uid": 25,
+					"suspects": 2,
+					"refuses": 1
+				},
+				{
+					"uid": 26,
+					"suspects": 4,
+					"refuses": 10
+				},
+				{
+					"uid": 27,
+					"suspects": 3,
+					"refuses": 1
+				},
+				{
+					"uid": 28,
+					"suspects": 1
+				},
+				{
+					"uid": 29,
+					"suspects": 9,
+					"refuses": 14
+				},
+				{
+					"uid": 31,
+					"suspects": 48,
+					"refuses": 4
+				},
+				{
+					"uid": 32,
+					"suspects": 5,
+					"refuses": 6
+				},
+				{
+					"uid": 33,
+					"suspects": 42,
+					"refuses": 27
+				},
+				{
+					"uid": 35,
+					"suspects": 163,
+					"cases": 2,
+					"refuses": 48
+				},
+				{
+					"uid": 41,
+					"suspects": 7,
+					"refuses": 8
+				},
+				{
+					"uid": 42,
+					"suspects": 36,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 73,
+					"refuses": 10
+				},
+				{
+					"uid": 50,
+					"suspects": 6,
+					"refuses": 1
+				},
+				{
+					"uid": 51,
+					"suspects": 5
+				},
+				{
+					"uid": 52,
+					"suspects": 3,
+					"refuses": 7
+				},
+				{
+					"uid": 53,
+					"suspects": 12,
+					"refuses": 3
+				}
+			]
+		},
+		{
+			"date": "03/03/2020",
+			"time": "15:50",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 1
+				},
+				{
+					"uid": 13,
+					"suspects": 3,
+					"refuses": 1
+				},
+				{
+					"uid": 15,
+					"suspects": 1,
+					"refuses": 4
+				},
+				{
+					"uid": 21,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 22,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 23,
+					"suspects": 19,
+					"refuses": 9
+				},
+				{
+					"uid": 24,
+					"suspects": 2,
+					"refuses": 6
+				},
+				{
+					"uid": 25,
+					"suspects": 4,
+					"refuses": 1
+				},
+				{
+					"uid": 26,
+					"suspects": 4,
+					"refuses": 11
+				},
+				{
+					"uid": 27,
+					"suspects": 5,
+					"refuses": 1
+				},
+				{
+					"uid": 28,
+					"suspects": 1
+				},
+				{
+					"uid": 29,
+					"suspects": 21,
+					"refuses": 16
+				},
+				{
+					"uid": 31,
+					"suspects": 58,
+					"refuses": 6
+				},
+				{
+					"uid": 32,
+					"suspects": 5,
+					"refuses": 6
+				},
+				{
+					"uid": 33,
+					"suspects": 62,
+					"refuses": 29
+				},
+				{
+					"uid": 35,
+					"suspects": 130,
+					"cases": 2,
+					"refuses": 104
+				},
+				{
+					"uid": 41,
+					"suspects": 14,
+					"refuses": 8
+				},
+				{
+					"uid": 42,
+					"suspects": 43,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 82,
+					"refuses": 20
+				},
+				{
+					"uid": 50,
+					"suspects": 6,
+					"refuses": 1
+				},
+				{
+					"uid": 51,
+					"suspects": 6
+				},
+				{
+					"uid": 52,
+					"suspects": 7,
+					"refuses": 7
+				},
+				{
+					"uid": 53,
+					"suspects": 12,
+					"refuses": 3
+				}
+			]
+		},
+		{
+			"date": "04/03/2020",
+			"time": "17:15",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 1
+				},
+				{
+					"uid": 13,
+					"suspects": 4,
+					"refuses": 1
+				},
+				{
+					"uid": 15,
+					"suspects": 1,
+					"refuses": 4
+				},
+				{
+					"uid": 21,
+					"suspects": 0,
+					"refuses": 2
+				},
+				{
+					"uid": 22,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 23,
+					"suspects": 14,
+					"refuses": 18
+				},
+				{
+					"uid": 24,
+					"suspects": 5,
+					"refuses": 6
+				},
+				{
+					"uid": 25,
+					"suspects": 4,
+					"refuses": 1
+				},
+				{
+					"uid": 26,
+					"suspects": 6,
+					"refuses": 11
+				},
+				{
+					"uid": 27,
+					"suspects": 5,
+					"refuses": 1
+				},
+				{
+					"uid": 28,
+					"suspects": 1
+				},
+				{
+					"uid": 29,
+					"suspects": 19,
+					"refuses": 21
+				},
+				{
+					"uid": 31,
+					"suspects": 82,
+					"refuses": 6
+				},
+				{
+					"uid": 32,
+					"suspects": 5,
+					"refuses": 7
+				},
+				{
+					"uid": 33,
+					"suspects": 55,
+					"refuses": 52
+				},
+				{
+					"uid": 35,
+					"suspects": 135,
+					"cases": 3,
+					"refuses": 131
+				},
+				{
+					"uid": 41,
+					"suspects": 13,
+					"refuses": 8
+				},
+				{
+					"uid": 42,
+					"suspects": 46,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 98,
+					"refuses": 20
+				},
+				{
+					"uid": 50,
+					"suspects": 10,
+					"refuses": 3
+				},
+				{
+					"uid": 51,
+					"suspects": 6
+				},
+				{
+					"uid": 52,
+					"suspects": 1,
+					"refuses": 12
+				},
+				{
+					"uid": 53,
+					"suspects": 18,
+					"refuses": 5
+				}
+			]
+		},
+		{
+			"date": "05/03/2020",
+			"time": "16:00",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 1
+				},
+				{
+					"uid": 13,
+					"suspects": 5,
+					"refuses": 1
+				},
+				{
+					"uid": 15,
+					"suspects": 1,
+					"refuses": 5
+				},
+				{
+					"uid": 21,
+					"refuses": 2
+				},
+				{
+					"uid": 22,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 23,
+					"suspects": 16,
+					"refuses": 18
+				},
+				{
+					"uid": 24,
+					"suspects": 4,
+					"refuses": 8
+				},
+				{
+					"uid": 25,
+					"suspects": 4,
+					"refuses": 1
+				},
+				{
+					"uid": 26,
+					"suspects": 8,
+					"refuses": 12
+				},
+				{
+					"uid": 27,
+					"suspects": 6,
+					"refuses": 1
+				},
+				{
+					"uid": 28,
+					"suspects": 2
+				},
+				{
+					"uid": 29,
+					"suspects": 23,
+					"refuses": 29
+				},
+				{
+					"uid": 31,
+					"suspects": 80,
+					"refuses": 12
+				},
+				{
+					"uid": 32,
+					"suspects": 5,
+					"refuses": 8
+				},
+				{
+					"uid": 33,
+					"suspects": 79,
+					"cases": 1,
+					"refuses": 58
+				},
+				{
+					"uid": 35,
+					"suspects": 182,
+					"cases": 6,
+					"refuses": 159,
+					"comments": "1 Portador assintomático"
+				},
+				{
+					"uid": 41,
+					"suspects": 20,
+					"refuses": 9
+				},
+				{
+					"uid": 42,
+					"suspects": 54,
+					"refuses": 4
+				},
+				{
+					"uid": 43,
+					"suspects": 104,
+					"refuses": 25
+				},
+				{
+					"uid": 50,
+					"suspects": 11,
+					"refuses": 3
+				},
+				{
+					"uid": 51,
+					"suspects": 6
+				},
+				{
+					"uid": 52,
+					"suspects": 4,
+					"refuses": 12
+				},
+				{
+					"uid": 53,
+					"suspects": 20,
+					"refuses": 9
+				}
+			]
+		},
+		{
+			"date": "06/03/2020",
+			"time": "16:00",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 1
+				},
+				{
+					"uid": 13,
+					"suspects": 2,
+					"refuses": 4
+				},
+				{
+					"uid": 15,
+					"suspects": 4,
+					"refuses": 5
+				},
+				{
+					"uid": 21,
+					"refuses": 2
+				},
+				{
+					"uid": 22,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 23,
+					"suspects": 12,
+					"refuses": 24
+				},
+				{
+					"uid": 24,
+					"suspects": 7,
+					"refuses": 8
+				},
+				{
+					"uid": 25,
+					"suspects": 3,
+					"refuses": 3
+				},
+				{
+					"uid": 26,
+					"suspects": 6,
+					"refuses": 14
+				},
+				{
+					"uid": 27,
+					"suspects": 7,
+					"refuses": 1
+				},
+				{
+					"uid": 28,
+					"suspects": 3,
+					"refuses": 1
+				},
+				{
+					"uid": 29,
+					"suspects": 15,
+					"cases": 1,
+					"refuses": 32
+				},
+				{
+					"uid": 31,
+					"suspects": 123,
+					"refuses": 17
+				},
+				{
+					"uid": 32,
+					"suspects": 1,
+					"cases": 1,
+					"refuses": 12
+				},
+				{
+					"uid": 33,
+					"suspects": 111,
+					"cases": 1,
+					"refuses": 67
+				},
+				{
+					"uid": 35,
+					"suspects": 222,
+					"cases": 10,
+					"refuses": 189,
+					"comments": "1 Portador assintomático"
+				},
+				{
+					"uid": 41,
+					"suspects": 25,
+					"refuses": 13
+				},
+				{
+					"uid": 42,
+					"suspects": 59,
+					"refuses": 10
+				},
+				{
+					"uid": 43,
+					"suspects": 112,
+					"refuses": 41
+				},
+				{
+					"uid": 50,
+					"suspects": 8,
+					"refuses": 9
+				},
+				{
+					"uid": 51,
+					"suspects": 6,
+					"refuses": 1
+				},
+				{
+					"uid": 52,
+					"suspects": 4,
+					"refuses": 12
+				},
+				{
+					"uid": 53,
+					"suspects": 36,
+					"refuses": 13
+				}
+			]
+		},
+		{
+			"date": "07/03/2020",
+			"time": "18:35",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 1
+				},
+				{
+					"uid": 13,
+					"suspects": 2,
+					"refuses": 4
+				},
+				{
+					"uid": 15,
+					"suspects": 4,
+					"refuses": 5
+				},
+				{
+					"uid": 21,
+					"refuses": 2
+				},
+				{
+					"uid": 22,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 23,
+					"suspects": 13,
+					"refuses": 24
+				},
+				{
+					"uid": 24,
+					"suspects": 4,
+					"refuses": 11
+				},
+				{
+					"uid": 25,
+					"suspects": 3,
+					"refuses": 3
+				},
+				{
+					"uid": 26,
+					"suspects": 6,
+					"refuses": 14
+				},
+				{
+					"uid": 27,
+					"suspects": 7,
+					"refuses": 1
+				},
+				{
+					"uid": 28,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 29,
+					"suspects": 15,
+					"cases": 2,
+					"refuses": 32
+				},
+				{
+					"uid": 31,
+					"suspects": 123,
+					"refuses": 17
+				},
+				{
+					"uid": 32,
+					"suspects": 1,
+					"cases": 1,
+					"refuses": 12
+				},
+				{
+					"uid": 33,
+					"suspects": 111,
+					"cases": 2,
+					"refuses": 67
+				},
+				{
+					"uid": 35,
+					"suspects": 184,
+					"cases": 13,
+					"refuses": 246,
+					"comments": "1 Portador assintomático"
+				},
+				{
+					"uid": 41,
+					"suspects": 20,
+					"refuses": 18
+				},
+				{
+					"uid": 42,
+					"suspects": 44,
+					"refuses": 25
+				},
+				{
+					"uid": 43,
+					"suspects": 88,
+					"refuses": 75
+				},
+				{
+					"uid": 50,
+					"suspects": 6,
+					"refuses": 11
+				},
+				{
+					"uid": 51,
+					"suspects": 6,
+					"refuses": 1
+				},
+				{
+					"uid": 52,
+					"suspects": 4,
+					"refuses": 12
+				},
+				{
+					"uid": 53,
+					"suspects": 30,
+					"cases": 1,
+					"refuses": 19
+				}
+			]
+		},
+		{
+			"date": "08/03/2020",
+			"time": "17:30",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 1
+				},
+				{
+					"uid": 13,
+					"suspects": 2,
+					"refuses": 4
+				},
+				{
+					"uid": 15,
+					"suspects": 3,
+					"refuses": 6
+				},
+				{
+					"uid": 21,
+					"refuses": 2
+				},
+				{
+					"uid": 22,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 23,
+					"suspects": 11,
+					"refuses": 26
+				},
+				{
+					"uid": 24,
+					"suspects": 9,
+					"refuses": 13
+				},
+				{
+					"uid": 25,
+					"suspects": 3,
+					"refuses": 3
+				},
+				{
+					"uid": 26,
+					"suspects": 9,
+					"refuses": 18
+				},
+				{
+					"uid": 27,
+					"suspects": 6,
+					"cases": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 28,
+					"suspects": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 29,
+					"suspects": 15,
+					"cases": 2,
+					"refuses": 32,
+					"broadcast": true
+				},
+				{
+					"uid": 31,
+					"suspects": 122,
+					"cases": 1,
+					"refuses": 17
+				},
+				{
+					"uid": 32,
+					"suspects": 1,
+					"cases": 1,
+					"refuses": 12
+				},
+				{
+					"uid": 33,
+					"suspects": 110,
+					"cases": 3,
+					"refuses": 67
+				},
+				{
+					"uid": 35,
+					"suspects": 176,
+					"cases": 16,
+					"refuses": 258,
+					"comments": "1 Portador assintomático",
+					"broadcast": true
+				},
+				{
+					"uid": 41,
+					"suspects": 22,
+					"refuses": 20
+				},
+				{
+					"uid": 42,
+					"suspects": 44,
+					"refuses": 26
+				},
+				{
+					"uid": 43,
+					"suspects": 88,
+					"refuses": 75
+				},
+				{
+					"uid": 50,
+					"suspects": 6,
+					"refuses": 11
+				},
+				{
+					"uid": 51,
+					"suspects": 5,
+					"refuses": 2
+				},
+				{
+					"uid": 52,
+					"suspects": 4,
+					"refuses": 12
+				},
+				{
+					"uid": 53,
+					"suspects": 24,
+					"cases": 1,
+					"refuses": 24
+				}
+			]
+		},
+		{
+			"date": "10/03/2020",
+			"time": "16:05",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 2,
+					"refuses": 1
+				},
+				{
+					"uid": 12,
+					"suspects": 3
+				},
+				{
+					"uid": 13,
+					"suspects": 3,
+					"refuses": 4
+				},
+				{
+					"uid": 15,
+					"suspects": 5,
+					"refuses": 12
+				},
+				{
+					"uid": 21,
+					"suspects": 2,
+					"refuses": 2
+				},
+				{
+					"uid": 22,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 23,
+					"suspects": 22,
+					"refuses": 42
+				},
+				{
+					"uid": 24,
+					"suspects": 15,
+					"refuses": 13
+				},
+				{
+					"uid": 25,
+					"suspects": 5,
+					"refuses": 6
+				},
+				{
+					"uid": 26,
+					"suspects": 12,
+					"refuses": 22
+				},
+				{
+					"uid": 27,
+					"suspects": 6,
+					"cases": 1,
+					"refuses": 1
+				},
+				{
+					"uid": 28,
+					"suspects": 2,
+					"refuses": 3
+				},
+				{
+					"uid": 29,
+					"suspects": 46,
+					"cases": 2,
+					"refuses": 35,
+					"broadcast": true
+				},
+				{
+					"uid": 31,
+					"suspects": 122,
+					"cases": 1,
+					"refuses": 18
+				},
+				{
+					"uid": 32,
+					"suspects": 1,
+					"cases": 1,
+					"refuses": 12
+				},
+				{
+					"uid": 33,
+					"suspects": 119,
+					"cases": 8,
+					"refuses": 85
+				},
+				{
+					"uid": 35,
+					"suspects": 302,
+					"cases": 19,
+					"refuses": 289,
+					"comments": "1 Portador assintomático",
+					"broadcast": true
+				},
+				{
+					"uid": 41,
+					"suspects": 33,
+					"refuses": 20
+				},
+				{
+					"uid": 42,
+					"suspects": 42,
+					"refuses": 28
+				},
+				{
+					"uid": 43,
+					"suspects": 70,
+					"cases": 1,
+					"refuses": 129
+				},
+				{
+					"uid": 50,
+					"suspects": 6,
+					"refuses": 11
+				},
+				{
+					"uid": 51,
+					"suspects": 1,
+					"refuses": 7
+				},
+				{
+					"uid": 52,
+					"suspects": 14,
+					"refuses": 14
+				},
+				{
+					"uid": 53,
+					"suspects": 59,
+					"cases": 1,
+					"refuses": 24
+				}
+			]
+		},
+		{
+			"date": "11/03/2020",
+			"time": "16:45",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 2,
+					"refuses": 1
+				},
+				{
+					"uid": 12,
+					"suspects": 3
+				},
+				{
+					"uid": 13,
+					"suspects": 1,
+					"refuses": 7
+				},
+				{
+					"uid": 15,
+					"suspects": 5,
+					"refuses": 13
+				},
+				{
+					"uid": 21,
+					"suspects": 6,
+					"refuses": 2
+				},
+				{
+					"uid": 22,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 23,
+					"suspects": 22,
+					"refuses": 42
+				},
+				{
+					"uid": 24,
+					"suspects": 13,
+					"refuses": 14
+				},
+				{
+					"uid": 25,
+					"suspects": 7,
+					"refuses": 6
+				},
+				{
+					"uid": 26,
+					"suspects": 17,
+					"refuses": 22
+				},
+				{
+					"uid": 27,
+					"suspects": 4,
+					"cases": 1,
+					"refuses": 7
+				},
+				{
+					"uid": 28,
+					"suspects": 2,
+					"refuses": 3
+				},
+				{
+					"uid": 29,
+					"suspects": 65,
+					"cases": 2,
+					"refuses": 36,
+					"broadcast": true
+				},
+				{
+					"uid": 31,
+					"suspects": 117,
+					"cases": 1,
+					"refuses": 22
+				},
+				{
+					"uid": 32,
+					"suspects": 31,
+					"cases": 1,
+					"refuses": 13
+				},
+				{
+					"uid": 33,
+					"suspects": 87,
+					"cases": 13,
+					"refuses": 133
+				},
+				{
+					"uid": 35,
+					"suspects": 263,
+					"cases": 30,
+					"refuses": 320,
+					"comments": "1 Portador assintomático",
+					"broadcast": true
+				},
+				{
+					"uid": 41,
+					"suspects": 49,
+					"refuses": 27
+				},
+				{
+					"uid": 42,
+					"suspects": 47,
+					"refuses": 32
+				},
+				{
+					"uid": 43,
+					"suspects": 67,
+					"cases": 2,
+					"refuses": 159
+				},
+				{
+					"uid": 50,
+					"suspects": 6,
+					"refuses": 11
+				},
+				{
+					"uid": 51,
+					"suspects": 1,
+					"refuses": 7
+				},
+				{
+					"uid": 52,
+					"suspects": 17,
+					"refuses": 28
+				},
+				{
+					"uid": 53,
+					"suspects": 74,
+					"cases": 2,
+					"refuses": 28
+				}
+			]
+		},
+		{
+			"date": "12/03/2020",
+			"time": "16:20",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 2,
+					"refuses": 1
+				},
+				{
+					"uid": 12,
+					"suspects": 3
+				},
+				{
+					"uid": 13,
+					"suspects": 1,
+					"refuses": 7
+				},
+				{
+					"uid": 15,
+					"suspects": 5,
+					"refuses": 13
+				},
+				{
+					"uid": 21,
+					"suspects": 6,
+					"refuses": 2
+				},
+				{
+					"uid": 22,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 23,
+					"suspects": 22,
+					"refuses": 42
+				},
+				{
+					"uid": 24,
+					"suspects": 13,
+					"refuses": 15
+				},
+				{
+					"uid": 25,
+					"suspects": 10,
+					"refuses": 6
+				},
+				{
+					"uid": 26,
+					"suspects": 18,
+					"cases": 2,
+					"refuses": 23
+				},
+				{
+					"uid": 27,
+					"suspects": 6,
+					"cases": 1,
+					"refuses": 7
+				},
+				{
+					"uid": 28,
+					"suspects": 2,
+					"refuses": 3
+				},
+				{
+					"uid": 29,
+					"suspects": 65,
+					"cases": 2,
+					"refuses": 36,
+					"broadcast": true
+				},
+				{
+					"uid": 31,
+					"suspects": 117,
+					"cases": 1,
+					"refuses": 22
+				},
+				{
+					"uid": 32,
+					"suspects": 51,
+					"cases": 1,
+					"refuses": 21
+				},
+				{
+					"uid": 33,
+					"suspects": 76,
+					"cases": 16,
+					"refuses": 146,
+					"comments": "Transmissão comunitária no município do Rio de Janeiro",
+					"broadcast": true
+				},
+				{
+					"uid": 35,
+					"suspects": 704,
+					"cases": 42,
+					"refuses": 471,
+					"comments": "Transmissão comunitária no município de São Paulo.",
+					"broadcast": true
+				},
+				{
+					"uid": 41,
+					"suspects": 54,
+					"cases": 6,
+					"refuses": 29
+				},
+				{
+					"uid": 42,
+					"suspects": 73,
+					"refuses": 34
+				},
+				{
+					"uid": 43,
+					"suspects": 81,
+					"cases": 4,
+					"refuses": 183
+				},
+				{
+					"uid": 50,
+					"suspects": 9,
+					"refuses": 15
+				},
+				{
+					"uid": 51,
+					"suspects": 6,
+					"refuses": 7
+				},
+				{
+					"uid": 52,
+					"suspects": 15,
+					"refuses": 34
+				},
+				{
+					"uid": 53,
+					"suspects": 82,
+					"cases": 2,
+					"refuses": 44
+				}
+			]
+		},
+		{
+			"date": "13/03/2020",
+			"time": "15:45",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 2,
+					"refuses": 1
+				},
+				{
+					"uid": 12,
+					"suspects": 3
+				},
+				{
+					"uid": 13,
+					"suspects": 1,
+					"refuses": 7
+				},
+				{
+					"uid": 15,
+					"suspects": 1,
+					"refuses": 20
+				},
+				{
+					"uid": 17,
+					"suspects": 2
+				},
+				{
+					"uid": 21,
+					"suspects": 6,
+					"refuses": 2
+				},
+				{
+					"uid": 22,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 23,
+					"suspects": 22,
+					"refuses": 59
+				},
+				{
+					"uid": 24,
+					"suspects": 12,
+					"cases": 1,
+					"refuses": 15
+				},
+				{
+					"uid": 25,
+					"suspects": 16,
+					"refuses": 6
+				},
+				{
+					"uid": 26,
+					"suspects": 18,
+					"cases": 2,
+					"refuses": 23
+				},
+				{
+					"uid": 27,
+					"suspects": 6,
+					"cases": 1,
+					"refuses": 7
+				},
+				{
+					"uid": 28,
+					"suspects": 2,
+					"refuses": 3
+				},
+				{
+					"uid": 29,
+					"suspects": 65,
+					"cases": 2,
+					"refuses": 36,
+					"broadcast": true
+				},
+				{
+					"uid": 31,
+					"suspects": 116,
+					"cases": 2,
+					"refuses": 73
+				},
+				{
+					"uid": 32,
+					"suspects": 51,
+					"cases": 1,
+					"refuses": 21
+				},
+				{
+					"uid": 33,
+					"suspects": 76,
+					"cases": 16,
+					"refuses": 147,
+					"comments": "Transmissão comunitária no município do Rio de Janeiro",
+					"broadcast": true
+				},
+				{
+					"uid": 35,
+					"suspects": 753,
+					"cases": 56,
+					"refuses": 529,
+					"comments": "Transmissão comunitária no município de São Paulo.",
+					"broadcast": true
+				},
+				{
+					"uid": 41,
+					"suspects": 72,
+					"cases": 6,
+					"refuses": 34
+				},
+				{
+					"uid": 42,
+					"suspects": 77,
+					"cases": 2,
+					"refuses": 34
+				},
+				{
+					"uid": 43,
+					"suspects": 81,
+					"cases": 4,
+					"refuses": 203
+				},
+				{
+					"uid": 50,
+					"suspects": 15,
+					"refuses": 16
+				},
+				{
+					"uid": 51,
+					"suspects": 6,
+					"refuses": 7
+				},
+				{
+					"uid": 52,
+					"suspects": 6,
+					"cases": 3,
+					"refuses": 46
+				},
+				{
+					"uid": 53,
+					"suspects": 75,
+					"cases": 2,
+					"refuses": 53
+				}
+			]
+		},
+		{
+			"date": "14/03/2020",
+			"time": "16:25",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 2,
+					"refuses": 1
+				},
+				{
+					"uid": 12,
+					"suspects": 3
+				},
+				{
+					"uid": 13,
+					"suspects": 1,
+					"refuses": 7
+				},
+				{
+					"uid": 15,
+					"suspects": 1,
+					"refuses": 20
+				},
+				{
+					"uid": 17,
+					"suspects": 2
+				},
+				{
+					"uid": 21,
+					"suspects": 6,
+					"refuses": 2
+				},
+				{
+					"uid": 22,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 23,
+					"suspects": 22,
+					"refuses": 59
+				},
+				{
+					"uid": 24,
+					"suspects": 12,
+					"cases": 1,
+					"refuses": 15
+				},
+				{
+					"uid": 25,
+					"suspects": 11,
+					"refuses": 11
+				},
+				{
+					"uid": 26,
+					"suspects": 18,
+					"cases": 2,
+					"refuses": 23
+				},
+				{
+					"uid": 27,
+					"suspects": 6,
+					"cases": 1,
+					"refuses": 7
+				},
+				{
+					"uid": 28,
+					"suspects": 4,
+					"refuses": 3
+				},
+				{
+					"uid": 29,
+					"suspects": 65,
+					"cases": 2,
+					"refuses": 36,
+					"broadcast": true
+				},
+				{
+					"uid": 31,
+					"suspects": 106,
+					"cases": 2,
+					"refuses": 85
+				},
+				{
+					"uid": 32,
+					"suspects": 51,
+					"cases": 1,
+					"refuses": 21
+				},
+				{
+					"uid": 33,
+					"suspects": 76,
+					"cases": 22,
+					"refuses": 147,
+					"comments": "Transmissão comunitária no município do Rio de Janeiro",
+					"broadcast": true
+				},
+				{
+					"uid": 35,
+					"suspects": 752,
+					"cases": 65,
+					"refuses": 545,
+					"comments": "Transmissão comunitária no município de São Paulo.",
+					"broadcast": true
+				},
+				{
+					"uid": 41,
+					"suspects": 60,
+					"cases": 6,
+					"refuses": 50
+				},
+				{
+					"uid": 42,
+					"suspects": 85,
+					"cases": 4,
+					"refuses": 39
+				},
+				{
+					"uid": 43,
+					"suspects": 80,
+					"cases": 6,
+					"refuses": 203
+				},
+				{
+					"uid": 50,
+					"suspects": 15,
+					"refuses": 16
+				},
+				{
+					"uid": 51,
+					"suspects": 6,
+					"refuses": 7
+				},
+				{
+					"uid": 52,
+					"suspects": 4,
+					"cases": 3,
+					"refuses": 49
+				},
+				{
+					"uid": 53,
+					"suspects": 107,
+					"cases": 6,
+					"refuses": 65
+				}
+			]
+		},
+		{
+			"date": "15/03/2020",
+			"time": "19:15",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 2,
+					"refuses": 1
+				},
+				{
+					"uid": 12,
+					"suspects": 3
+				},
+				{
+					"uid": 13,
+					"cases": 1,
+					"refuses": 7
+				},
+				{
+					"uid": 14,
+					"suspects": 2
+				},
+				{
+					"uid": 15,
+					"suspects": 1,
+					"refuses": 23
+				},
+				{
+					"uid": 16,
+					"suspects": 1
+				},
+				{
+					"uid": 17,
+					"suspects": 3
+				},
+				{
+					"uid": 21,
+					"suspects": 6,
+					"refuses": 2
+				},
+				{
+					"uid": 22,
+					"suspects": 1,
+					"refuses": 2
+				},
+				{
+					"uid": 23,
+					"suspects": 22,
+					"refuses": 59
+				},
+				{
+					"uid": 24,
+					"suspects": 14,
+					"cases": 1,
+					"refuses": 15
+				},
+				{
+					"uid": 25,
+					"suspects": 27,
+					"refuses": 11
+				},
+				{
+					"uid": 26,
+					"suspects": 18,
+					"cases": 2,
+					"refuses": 23
+				},
+				{
+					"uid": 27,
+					"suspects": 14,
+					"cases": 1,
+					"refuses": 21
+				},
+				{
+					"uid": 28,
+					"suspects": 1,
+					"cases": 1,
+					"refuses": 11
+				},
+				{
+					"uid": 29,
+					"suspects": 65,
+					"cases": 2,
+					"refuses": 36,
+					"broadcast": true
+				},
+				{
+					"uid": 31,
+					"suspects": 106,
+					"cases": 2,
+					"refuses": 85
+				},
+				{
+					"uid": 32,
+					"suspects": 51,
+					"cases": 1,
+					"refuses": 21
+				},
+				{
+					"uid": 33,
+					"suspects": 95,
+					"cases": 24,
+					"refuses": 147,
+					"comments": "Transmissão comunitária no município do Rio de Janeiro",
+					"broadcast": true
+				},
+				{
+					"uid": 35,
+					"suspects": 1125,
+					"cases": 136,
+					"refuses": 551,
+					"comments": "Transmissão comunitária no município de São Paulo.",
+					"broadcast": true
+				},
+				{
+					"uid": 41,
+					"suspects": 80,
+					"cases": 6,
+					"refuses": 50
+				},
+				{
+					"uid": 42,
+					"suspects": 102,
+					"cases": 6,
+					"refuses": 41
+				},
+				{
+					"uid": 43,
+					"suspects": 66,
+					"cases": 6,
+					"refuses": 217
+				},
+				{
+					"uid": 50,
+					"suspects": 15,
+					"refuses": 16
+				},
+				{
+					"uid": 51,
+					"suspects": 8,
+					"refuses": 7
+				},
+				{
+					"uid": 52,
+					"suspects": 4,
+					"cases": 3,
+					"refuses": 49
+				},
+				{
+					"uid": 53,
+					"suspects": 81,
+					"cases": 8,
+					"refuses": 91
+				}
+			]
+		},
+		{
+			"date": "16/03/2020",
+			"time": "15:50",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 2,
+					"refuses": 1
+				},
+				{
+					"uid": 12,
+					"suspects": 3
+				},
+				{
+					"uid": 13,
+					"cases": 1,
+					"refuses": 7
+				},
+				{
+					"uid": 14,
+					"suspects": 2
+				},
+				{
+					"uid": 15,
+					"suspects": 1,
+					"refuses": 22
+				},
+				{
+					"uid": 16,
+					"suspects": 2
+				},
+				{
+					"uid": 17,
+					"suspects": 3
+				},
+				{
+					"uid": 21,
+					"suspects": 6,
+					"refuses": 2
+				},
+				{
+					"uid": 22,
+					"suspects": 2,
+					"refuses": 3
+				},
+				{
+					"uid": 23,
+					"suspects": 22,
+					"refuses": 60
+				},
+				{
+					"uid": 24,
+					"suspects": 14,
+					"cases": 1,
+					"refuses": 15
+				},
+				{
+					"uid": 25,
+					"suspects": 33,
+					"refuses": 15
+				},
+				{
+					"uid": 26,
+					"suspects": 18,
+					"cases": 2,
+					"refuses": 23
+				},
+				{
+					"uid": 27,
+					"suspects": 16,
+					"cases": 1,
+					"refuses": 22
+				},
+				{
+					"uid": 28,
+					"suspects": 1,
+					"cases": 1,
+					"refuses": 11
+				},
+				{
+					"uid": 29,
+					"suspects": 65,
+					"cases": 2,
+					"refuses": 40,
+					"broadcast": true
+				},
+				{
+					"uid": 31,
+					"suspects": 102,
+					"cases": 5,
+					"refuses": 88
+				},
+				{
+					"uid": 32,
+					"suspects": 50,
+					"cases": 1,
+					"refuses": 21
+				},
+				{
+					"uid": 33,
+					"suspects": 96,
+					"cases": 31,
+					"refuses": 153,
+					"comments": "Transmissão comunitária no município do Rio de Janeiro",
+					"broadcast": true
+				},
+				{
+					"uid": 35,
+					"suspects": 1177,
+					"cases": 152,
+					"refuses": 623,
+					"comments": "Transmissão comunitária no município de São Paulo.",
+					"broadcast": true
+				},
+				{
+					"uid": 41,
+					"suspects": 85,
+					"cases": 6,
+					"refuses": 83
+				},
+				{
+					"uid": 42,
+					"suspects": 109,
+					"cases": 7,
+					"refuses": 44
+				},
+				{
+					"uid": 43,
+					"suspects": 119,
+					"cases": 6,
+					"refuses": 218
+				},
+				{
+					"uid": 50,
+					"suspects": 12,
+					"cases": 2,
+					"refuses": 19
+				},
+				{
+					"uid": 51,
+					"suspects": 14,
+					"refuses": 7
+				},
+				{
+					"uid": 52,
+					"suspects": 3,
+					"cases": 3,
+					"refuses": 54
+				},
+				{
+					"uid": 53,
+					"suspects": 107,
+					"cases": 13,
+					"refuses": 93
+				}
+			]
+		},
+		{
+			"date": "17/03/2020",
+			"time": "18:10",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 38,
+					"refuses": 3
+				},
+				{
+					"uid": 12,
+					"suspects": 8
+				},
+				{
+					"uid": 13,
+					"suspects": 7,
+					"cases": 1,
+					"refuses": 19
+				},
+				{
+					"uid": 14,
+					"suspects": 5
+				},
+				{
+					"uid": 15,
+					"suspects": 21,
+					"refuses": 22
+				},
+				{
+					"uid": 16,
+					"suspects": 6
+				},
+				{
+					"uid": 17,
+					"suspects": 11
+				},
+				{
+					"uid": 21,
+					"suspects": 52,
+					"refuses": 8
+				},
+				{
+					"uid": 22,
+					"suspects": 14,
+					"refuses": 4
+				},
+				{
+					"uid": 23,
+					"suspects": 211,
+					"cases": 5,
+					"refuses": 95
+				},
+				{
+					"uid": 24,
+					"suspects": 72,
+					"cases": 1,
+					"refuses": 21
+				},
+				{
+					"uid": 25,
+					"suspects": 48,
+					"refuses": 15
+				},
+				{
+					"uid": 26,
+					"suspects": 71,
+					"cases": 16,
+					"refuses": 33
+				},
+				{
+					"uid": 27,
+					"suspects": 34,
+					"cases": 1,
+					"refuses": 20
+				},
+				{
+					"uid": 28,
+					"suspects": 7,
+					"cases": 4,
+					"refuses": 12
+				},
+				{
+					"uid": 29,
+					"suspects": 375,
+					"cases": 3,
+					"refuses": 59,
+					"broadcast": true
+				},
+				{
+					"uid": 31,
+					"suspects": 563,
+					"cases": 7,
+					"refuses": 99
+				},
+				{
+					"uid": 32,
+					"suspects": 69,
+					"cases": 1,
+					"refuses": 21
+				},
+				{
+					"uid": 33,
+					"suspects": 859,
+					"cases": 33,
+					"refuses": 194,
+					"comments": "Transmissão comunitária no município do Rio de Janeiro",
+					"broadcast": true
+				},
+				{
+					"uid": 35,
+					"suspects": 5047,
+					"cases": 164,
+					"refuses": 709,
+					"deaths": 1,
+					"comments": "Transmissão comunitária no município de São Paulo.",
+					"broadcast": true
+				},
+				{
+					"uid": 41,
+					"suspects": 240,
+					"cases": 6,
+					"refuses": 82
+				},
+				{
+					"uid": 42,
+					"suspects": 220,
+					"cases": 7,
+					"refuses": 55
+				},
+				{
+					"uid": 43,
+					"suspects": 300,
+					"cases": 10,
+					"refuses": 217
+				},
+				{
+					"uid": 50,
+					"suspects": 44,
+					"cases": 4,
+					"refuses": 45
+				},
+				{
+					"uid": 51,
+					"suspects": 23,
+					"refuses": 7
+				},
+				{
+					"uid": 52,
+					"suspects": 221,
+					"cases": 6,
+					"refuses": 54
+				},
+				{
+					"uid": 53,
+					"suspects": 253,
+					"cases": 22,
+					"refuses": 96
+				}
+			]
+		},
+		{
+			"date": "18/03/2020",
+			"time": "20:00",
+			"values": [
+				{
+					"uid": 11,
+					"suspects": 61,
+					"refuses": 2
+				},
+				{
+					"uid": 12,
+					"suspects": 12
+				},
+				{
+					"uid": 13,
+					"suspects": 18,
+					"cases": 1,
+					"refuses": 26
+				},
+				{
+					"uid": 14,
+					"suspects": 9
+				},
+				{
+					"uid": 15,
+					"suspects": 43,
+					"refuses": 23
+				},
+				{
+					"uid": 16,
+					"suspects": 15
+				},
+				{
+					"uid": 17,
+					"suspects": 13
+				},
+				{
+					"uid": 21,
+					"suspects": 125,
+					"refuses": 13
+				},
+				{
+					"uid": 22,
+					"suspects": 12,
+					"refuses": 2
+				},
+				{
+					"uid": 23,
+					"suspects": 493,
+					"cases": 9,
+					"refuses": 89
+				},
+				{
+					"uid": 24,
+					"suspects": 108,
+					"cases": 1,
+					"refuses": 22
+				},
+				{
+					"uid": 25,
+					"suspects": 85,
+					"refuses": 11
+				},
+				{
+					"uid": 26,
+					"suspects": 89,
+					"cases": 16,
+					"refuses": 23,
+					"comments": "Transmissão comunitária no município de Recife.",
+					"broadcast": true
+				},
+				{
+					"uid": 27,
+					"suspects": 43,
+					"cases": 1,
+					"refuses": 22
+				},
+				{
+					"uid": 28,
+					"suspects": 15,
+					"cases": 5,
+					"refuses": 11
+				},
+				{
+					"uid": 29,
+					"suspects": 573,
+					"cases": 3,
+					"refuses": 36,
+					"broadcast": true
+				},
+				{
+					"uid": 31,
+					"suspects": 925,
+					"cases": 15,
+					"refuses": 104,
+					"comments": "Transmissão comunitária no município de Belo Horizonte.",
+					"broadcast": true
+				},
+				{
+					"uid": 32,
+					"suspects": 71,
+					"cases": 9,
+					"refuses": 21
+				},
+				{
+					"uid": 33,
+					"suspects": 1254,
+					"cases": 45,
+					"refuses": 148,
+					"comments": "Transmissão comunitária no município do Rio de Janeiro.",
+					"broadcast": true
+				},
+				{
+					"uid": 35,
+					"suspects": 5334,
+					"cases": 240,
+					"refuses": 596,
+					"deaths": 4,
+					"comments": "Transmissão comunitária no município de São Paulo.",
+					"broadcast": true
+				},
+				{
+					"uid": 41,
+					"suspects": 400,
+					"cases": 13,
+					"refuses": 119
+				},
+				{
+					"uid": 42,
+					"suspects": 346,
+					"cases": 10,
+					"refuses": 47,
+					"comments": "Transmissão comunitária em Santa Catarina.",
+					"broadcast": true
+				},
+				{
+					"uid": 43,
+					"suspects": 416,
+					"cases": 19,
+					"refuses": 330
+				},
+				{
+					"uid": 50,
+					"suspects": 93,
+					"cases": 7,
+					"refuses": 26
+				},
+				{
+					"uid": 51,
+					"suspects": 45,
+					"refuses": 8
+				},
+				{
+					"uid": 52,
+					"suspects": 353,
+					"cases": 8,
+					"refuses": 55
+				},
+				{
+					"uid": 53,
+					"suspects": 327,
+					"cases": 26,
+					"refuses": 107,
+					"broadcast": true
+				}
+			]
+		}
+	]
+}
