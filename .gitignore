@@ -1,5 +1,5 @@
 not_tracked/
-logs/*.log
+logs/
 env/
 resource/
 dist/

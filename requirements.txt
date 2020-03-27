@@ -1,5 +1,6 @@
 matplotlib==3.2.1
 pytz==2019.3
 telegram==0.0.1
+python-telegram-bot==12.4.2
 beautifulsoup4==4.8.2
 Pillow==7.0.0
