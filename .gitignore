@@ -5,7 +5,6 @@ resource/
 dist/
 .vscode/
 .idea/
-Procfile
 *.bat
 
 # Created by https://www.gitignore.io/api/python
