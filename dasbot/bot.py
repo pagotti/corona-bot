@@ -15,12 +15,13 @@ from uuid import uuid4
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
 from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode
 from telegram.utils.helpers import escape_markdown
-from dasbot.corona import G1Data, BingData, SeriesChart
+from dasbot.corona import G1Data, BingData, GovBR, SeriesChart
 
 
 # Enable logging
 logger = logging.getLogger(__name__)
 admin_id = int(os.environ.get("ADMIN_ID", 0))
+channel_id = os.environ.get("CHANNEL_ID")
 
 
 class JobsInfo(object):
@@ -59,12 +60,12 @@ class JobsInfo(object):
 def start(update, context):
     """Send a message when the command /start is issued."""
     update.message.reply_text("""Olá. Sou um bot de dados de casos de COVID-19 no Brasil.
-    Eu busco dados do Ministério da Saúde (plataforma.saude.gov.br) e apresento os totais por 
-    estado ou para todo o país. Digite /help para ver as opções""")
+    Digite /help para ver as opções""")
 
 
 def help(update, context):
     """Send a message when the command /help is issued."""
+    logger.info('Arrive /help command "%s"', update.effective_message)
     update.message.reply_text("""Comandos que você pode enviar
     /start : inicia o bot
     /help : mostra a ajuda
@@ -72,8 +73,8 @@ def help(update, context):
     /chart : desenha um gráfico com a região informada, ex: /chart SP
     /listen : observa os dados de uma região a cada X minutos (experimental)
     /mute : para de observar a região programada com o /listen
-    Envie uma sigla de estado ou nome de cidade, para saber os confirmados nessa região
-    Você pode invocar os dados pelo bot em outros chats:  
+Envie uma sigla de estado ou nome de cidade, para saber os confirmados nessa região
+Você pode invocar os dados pelo bot em outros chats:  
     inicie a mensagem lá com @corona_br_bot e a região na sequência""")
 
 
@@ -82,9 +83,20 @@ def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
+def test(update, context):
+    logger.info('Arrive /test command "%s"', update.effective_message)
+    sources = [G1Data(), BingData(), GovBR()]
+    result = []
+    for corona in sources:
+        corona.refresh()
+        if corona.last_date:
+            result.append(corona.description)
+    update.message.reply_markdown("\n".join(result))
+
+
 def stats(update, context):
     logger.info('Arrive /stats command "%s"', update.effective_message)
-    sources = [G1Data(), BingData()]
+    sources = [G1Data(), BingData(), GovBR()]
     result = []
     for corona in sources:
         corona.refresh()
@@ -97,7 +109,7 @@ def general(update, context):
     logger.info('Arrive text message "%s"', update.effective_message)
     region = update.message.text
     result = []
-    sources = [G1Data(region), BingData(region)]
+    sources = [G1Data(region), BingData(region), GovBR(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
@@ -106,7 +118,7 @@ def general(update, context):
     if result:
         update.message.reply_markdown("\n".join(result))
     else:
-        update.message.reply_text("""Região não reconhecida. 
+        update.message.reply_text("""Região não reconhecida ou sem dados. 
 Envie a sigla do estado em maiúsculas, nomes de cidade com acentos. 
 Envie /help para ver a ajuda.""")
 
@@ -146,6 +158,8 @@ def inline_query(update, context):
     if not query:
         return
 
+    logger.info('Arrive /inline query "%s"', update.inline_query)
+
     sources = [G1Data(query), BingData(query)]
     results = []
 
@@ -176,11 +190,27 @@ def on_change_notifier(context):
             if not context.job.context.get("new", True):
                 changes = True
             else:
-                changes = [1 for i, j in zip(corona.get_data(), last) if i != j]
+                changes = [1 for i, j in zip(corona.get_data(), last) if i > j]
             if changes or not last:
                 context.job.context["last"] = corona.get_data()
                 context.bot.send_message(context.job.context["chat_id"], text=corona.description,
                                          parse_mode=ParseMode.MARKDOWN)
+
+
+def refresh_data(context):
+    BingData.load()
+    G1Data.load()
+    GovBR.load()
+
+    corona = BingData("BR")
+    corona.refresh()
+    corona_data = corona.get_data()
+    last = context.job.context["last"] if "last" in context.job.context else corona_data
+    changes = [1 for i, j in zip(corona_data, last) if i > j]
+    if changes:
+        context.job.context["last"] = corona_data
+        context.bot.send_message(context.job.context["chat_id"], text=corona.description,
+                                 parse_mode=ParseMode.MARKDOWN)
 
 
 _jobs = JobsInfo("logs/jobs.pickle")
@@ -188,6 +218,7 @@ _jobs = JobsInfo("logs/jobs.pickle")
 
 def set_timer(update, context):
     """Adiciona uma região na lista de jobs"""
+    logger.info('Arrive /listen command "%s"', update.effective_message)
     chat_id = update.message.chat_id
     try:
         region = context.args[0]
@@ -211,6 +242,7 @@ def set_timer(update, context):
 
 def unset_timer(update, context):
     """Remove o job programado"""
+    logger.info('Arrive /mute command "%s"', update.effective_message)
     chat_id = update.message.chat_id
 
     if not _jobs.exists(chat_id):
@@ -240,15 +272,13 @@ def main():
     dp.add_handler(CommandHandler("chart", chart))
     dp.add_handler(CommandHandler("listen", set_timer, pass_args=True, pass_job_queue=True))
     dp.add_handler(CommandHandler("mute", unset_timer))
+    dp.add_handler(CommandHandler("test", test))
     dp.add_handler(MessageHandler(Filters.text & ~Filters.update.channel_post, general))
     dp.add_handler(InlineQueryHandler(inline_query))
     dp.add_handler(MessageHandler(Filters.command, unknown))
 
-    corona = BingData("BR")
-    corona.refresh()
-    dp.job_queue.run_repeating(on_change_notifier, 300,
-                               context={"chat_id": "@corona_br", "region": "BR", "new": True,
-                                        "last": corona.get_data()})
+    # job para atualizar os dados das fontes e atualizar o canal caso haja novos casos
+    dp.job_queue.run_repeating(refresh_data, 300, first=5, context={"chat_id": channel_id, "region": "BR"})
 
     # carrega a lista de jobs que estavam programados
     jobs = _jobs.load()

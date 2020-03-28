@@ -1,9 +1,10 @@
 """
 Modulo corona
-Pega dados do site: http://plataforma.saude.gov.br/novocoronavirus
+Classes que fornecem dados sobre o corona virus
 
 """
 
+import copy
 import json
 import re
 import pytz
@@ -17,8 +18,8 @@ from datetime import datetime
 from dateutil import parser
 from urllib.request import urlopen, Request
 from urllib.error import URLError
-from bs4 import BeautifulSoup
 from PIL import Image
+from bs4 import BeautifulSoup
 
 
 br_ufs = {
@@ -60,12 +61,13 @@ def case_less_eq(left, right):
     return _normalize_case(left) == _normalize_case(right)
 
 
-def _http_get(url, expected=200):
+def _http_get(url, headers={}, expected=200):
     """return a request object from a url using http get
     """
     hdr = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml,application/json;q=0.9,*/*;q=0.8'}
+    hdr.update(headers)
 
     try:
         req = Request(url, headers=hdr)
@@ -148,6 +150,9 @@ class CoronaData(object):
         pass
 
 
+_bing_data = {}
+
+
 class BingData(CoronaData):
 
     @staticmethod
@@ -182,19 +187,28 @@ class BingData(CoronaData):
             self._bing = self._bing[0]
 
     def _load_data(self):
+        if not _bing_data:
+            BingData.load()
+        data = copy.deepcopy(_bing_data)
+        version = parser.parse(data["lastUpdated"]).timestamp()
+        self._version = version
+        self._raw_data = data
+        return True
+
+    @staticmethod
+    def load():
+        global _bing_data
         response = _http_get("https://bing.com/covid/data")
         if response:
-            data = json.loads(response.read())
-            version = parser.parse(data["lastUpdated"]).timestamp()
-            if version != self._version:
-                self._version = version
-                self._raw_data = data
-                return True
-            return False
+            _bing_data = json.loads(response.read())
+            with open('bing_cases.json', 'w', encoding='utf-8') as f:
+                json.dump(_bing_data, f)
+        else:
+            with open('bing_cases.json', 'r', encoding='utf-8') as f:
+                _bing_data = json.load(f)
 
-        with open('bing_cases.json', 'r', encoding='utf-8') as f:
-            self._raw_data = json.load(f)
-        return self._last_date is None
+
+_g1_data = {}
 
 
 class G1Data(CoronaData):
@@ -262,104 +276,116 @@ class G1Data(CoronaData):
             if self._data else None
 
     def _load_data(self):
+        if not _g1_data:
+            G1Data().load()
+        data = copy.deepcopy(_g1_data)
+        date = re.findall(r"(\d{1,2})/(\d{1,2})/(\d{4}), às (\d{1,2}:\d{1,2})", data["updated_at"])[0]
+        self._version = parser.parse("{}-{}-{} {}".format(date[2], date[1], date[0], date[3])).timestamp()
+        self._raw_data = data
+        return True
+
+    @staticmethod
+    def load():
+        global _g1_data
         response = _http_get("https://especiais.g1.globo.com/bemestar/coronavirus/mapa-coronavirus/data/brazil-cases.json")
         if response:
-            data = json.loads(response.read())
-            date = re.findall(r"(\d{1,2})/(\d{1,2})/(\d{4}), às (\d{1,2}:\d{1,2})", data["updated_at"])[0]
-            version = parser.parse("{}-{}-{} {}".format(date[2], date[1], date[0], date[3])).timestamp()
-            if version != self._version:
-                self._version = version
-                self._raw_data = data
-                return True
-            return False
+            _g1_data = json.loads(response.read())
+            with open('g1_cases.json', 'w', encoding='utf-8') as f:
+                json.dump(_g1_data, f)
+        else:
+            with open('g1_cases.json', 'r', encoding='utf-8') as f:
+                _g1_data = json.load(f)
 
-        with open('g1_cases.json', 'r', encoding='utf-8') as f:
-            self._raw_data = json.load(f)
-        return self._last_date is None
+
+_gov_br_data = {}
 
 
 class GovBR(CoronaData):
 
     @staticmethod
-    def categories(): return {
-        "cases": "Confirmados",
-        "deaths": "Mortos",
-        "suspects": "Suspeitos",
-        "refuses": "Descartados",
-    }
+    def categories():
+        return {
+            "cases": "Confirmados",
+            "deaths": "Mortos"
+        }
 
-    def __init__(self):
+    def __init__(self, region=None):
         super().__init__()
         self._data_source = "Ministério da Saúde"
-        self._region = "Brasil"
-        self._br = {}
-        self._uid = None
-
-    def get_series(self):
-        result = {}
-        for item in self._raw_data["brazil"]:
-            date = datetime.strptime("{}".format(item.get("date")), "%d/%m/%Y")
-            br = {}
-            for v in item.get("values"):
-                if self._uid is None or v.get("uid") == self._uid:
-                    for k in GovBR.categories():
-                        br[k] = br.get(k, 0) + v.get(k, 0)
-            result[date] = [br["cases"], br["deaths"], 0]
-        return result
+        self._region = region if region else "BR"
+        self._gov = {}
 
     def get_data(self):
-        """Nos dados do ministério não tem numeros de recuperados"""
-        return [self._br["cases"], self._br["deaths"], 0]
+        """Nos dados do ministério não tem numeros de recuperados e para estados só tem confirmados"""
+        return [self._gov["cases"], self._gov.get("deaths", 0), 0]
 
     def _get_cases(self):
         cases = []
         for k, v in GovBR.categories().items():
-            cases.append("{}: *{:n}*".format(v, self._br.get(k, 0)))
+            if k in self._gov:
+                cases.append("{}: *{:n}*".format(v, self._gov.get(k, 0)))
         return ", ".join(cases)
 
     def _update_stats(self):
-        """Nos dados do MS os valores corretos do brasil estão no último item somando todos os estados"""
-        self._br = {}
+        self._gov = {}
         if self._raw_data:
-            item = self._raw_data["brazil"][-1]
-            self._last_date = datetime.strptime("{} {}".format(item.get("date"), item.get("time")), "%d/%m/%Y %H:%M")
-            for v in item.get("values"):
-                if self._uid is None or v.get("uid") == self._uid:
-                    for k in GovBR.categories():
-                        self._br[k] = self._br.get(k, 0) + v.get(k, 0)
+            region = br_ufs[self._region].get("name") if self._region in br_ufs else self._region
+            if region == "BR":
+                categories = {"cases": "total_confirmado", "deaths": "total_obitos"}
+                item = self._raw_data["br"]
+            else:
+                categories = {"cases": "qtd_confirmado"}
+                item = [k for k in self._raw_data["states"] if k.get("nome") == region]
+
+            if item and len(item) == 1:
+                for k in GovBR.categories():
+                    if k in categories:
+                        value = str(item[0].get(categories[k], "0"))
+                        self._gov[k] = int(value.replace(".", ""))
+                date = parser.parse(item[0].get("updatedAt"))
+                self._last_date = date.astimezone(pytz.timezone("America/Sao_Paulo"))
+            else:
+                self._last_date = None
+
+    def _load_json(self, path, key):
+        # esse é o id atual, mas pode mudar com o tempo
+        app_id = "unAFkcaNDeXajurGB7LChj8SgQYS2ptm"
+        response = _http_get("https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/{}".format(path),
+                             {"x-parse-application-id": app_id})
+        if response:
+            data = json.loads(response.read())
+            self._raw_data[key] = data["results"]
+            return True
+        return False
 
     def _load_data(self):
-        response = _http_get("http://plataforma.saude.gov.br/novocoronavirus")
+        if not _gov_br_data:
+            GovBR.load()
+        self._raw_data = copy.deepcopy(_gov_br_data)
+        return True
+    
+    @staticmethod
+    def load_json(path, key):
+        global _gov_br_data
+        # esse é o id atual, mas pode mudar com o tempo
+        app_id = "unAFkcaNDeXajurGB7LChj8SgQYS2ptm"
+        response = _http_get("https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/{}".format(path),
+                             {"x-parse-application-id": app_id})
         if response:
-            main_page = BeautifulSoup(response, 'html.parser')
-            script_tag = main_page.find(_database_script_matcher)
-            if script_tag:
-                script_url = script_tag['src']
-                if script_url:
-                    version = re.findall(r"[?]v=(\d+)", script_url)[0]
-                    if version != self._version:
-                        with _http_get(script_url) as f:
-                            data = f.read().decode('utf-8')
-                        p = re.compile(r"\{.+", re.MULTILINE)
-                        data = json.loads(p.findall(data)[0])
-                        self._raw_data = data
-                        self._version = version
-                        return True
-                    return False
-
-        with open('br_cases.json', 'r', encoding='utf-8') as f:
-            self._raw_data = json.load(f)
-        return self._last_date is None
-
-
-class GovStates(GovBR):
-
-    def __init__(self, state):
-        super().__init__()
-        self.state = br_ufs.get(state, None)
-        if self.state:
-            self._region = self.state.get("name")
-            self._uid = int(self.state.get("uid"))
+            data = json.loads(response.read())
+            _gov_br_data[key] = data["results"]
+            return True
+        return False
+    
+    @staticmethod
+    def load():
+        global _gov_br_data
+        if GovBR.load_json("PortalGeral", "br") and GovBR.load_json("PortalMapa", "states"):
+            with open('ms_cases.json', 'w', encoding='utf-8') as f:
+                json.dump(_gov_br_data, f)
+        else:
+            with open('ms_cases.json', 'r', encoding='utf-8') as f:
+                _gov_br_data = json.load(f)
 
 
 class SeriesChart(object):
