@@ -2,7 +2,6 @@
 Schema do banco Postgre SQL do bot
 */
 
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -19,7 +18,7 @@ ALTER TABLE public.jobcache_id_seq OWNER TO "yldzrofu";
 CREATE TABLE public.jobcache (
     id bigint DEFAULT nextval('public.jobcache_id_seq'::regclass) NOT NULL,
     job_id character varying(37),
-    interval numeric(10,0) NOT NULL,
+    interval int NOT NULL,
     region character varying(50),
     chat_id character varying(37),
 	repeat boolean DEFAULT TRUE,
