@@ -19,7 +19,6 @@ from dateutil import parser
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 from PIL import Image
-from bs4 import BeautifulSoup
 
 
 br_ufs = {
@@ -117,11 +116,8 @@ class CoronaData(object):
         return self._region
 
     def refresh(self):
-        self._has_new_data = False
-        if self._load_data():
-            self._has_new_data = True
-            self._update_stats()
-        return self._has_new_data
+        self._load_data()
+        self._update_stats()
 
     def get_data(self):
         """Implementado na subclasse para retornar os dados em um array
@@ -201,11 +197,6 @@ class BingData(CoronaData):
         response = _http_get("https://bing.com/covid/data")
         if response:
             _bing_data = json.loads(response.read())
-            with open('bing_cases.json', 'w', encoding='utf-8') as f:
-                json.dump(_bing_data, f)
-        else:
-            with open('bing_cases.json', 'r', encoding='utf-8') as f:
-                _bing_data = json.load(f)
 
 
 _g1_data = {}
@@ -290,11 +281,6 @@ class G1Data(CoronaData):
         response = _http_get("https://especiais.g1.globo.com/bemestar/coronavirus/mapa-coronavirus/data/brazil-cases.json")
         if response:
             _g1_data = json.loads(response.read())
-            with open('g1_cases.json', 'w', encoding='utf-8') as f:
-                json.dump(_g1_data, f)
-        else:
-            with open('g1_cases.json', 'r', encoding='utf-8') as f:
-                _g1_data = json.load(f)
 
 
 _gov_br_data = {}
@@ -347,17 +333,6 @@ class GovBR(CoronaData):
             else:
                 self._last_date = None
 
-    def _load_json(self, path, key):
-        # esse é o id atual, mas pode mudar com o tempo
-        app_id = "unAFkcaNDeXajurGB7LChj8SgQYS2ptm"
-        response = _http_get("https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/{}".format(path),
-                             {"x-parse-application-id": app_id})
-        if response:
-            data = json.loads(response.read())
-            self._raw_data[key] = data["results"]
-            return True
-        return False
-
     def _load_data(self):
         if not _gov_br_data:
             GovBR.load()
@@ -374,18 +349,11 @@ class GovBR(CoronaData):
         if response:
             data = json.loads(response.read())
             _gov_br_data[key] = data["results"]
-            return True
-        return False
-    
+
     @staticmethod
     def load():
-        global _gov_br_data
-        if GovBR.load_json("PortalGeral", "br") and GovBR.load_json("PortalMapa", "states"):
-            with open('ms_cases.json', 'w', encoding='utf-8') as f:
-                json.dump(_gov_br_data, f)
-        else:
-            with open('ms_cases.json', 'r', encoding='utf-8') as f:
-                _gov_br_data = json.load(f)
+        GovBR.load_json("PortalGeral", "br")
+        GovBR.load_json("PortalMapa", "states")
 
 
 class SeriesChart(object):

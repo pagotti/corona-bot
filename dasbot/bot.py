@@ -9,6 +9,9 @@ import os
 import logging
 import locale
 import pickle
+import datetime
+import re
+import json
 
 from uuid import uuid4
 
@@ -16,12 +19,32 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Inlin
 from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode
 from telegram.utils.helpers import escape_markdown
 from dasbot.corona import G1Data, BingData, GovBR, SeriesChart
+from dasbot.db import PostgreSQLDriver
 
 
 # Enable logging
 logger = logging.getLogger(__name__)
+
+if os.environ.get("USE_DB", True):
+    logging.basicConfig(level=logging.INFO)
+else:
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                        filemode="a",
+                        filename="logs/log_{}.log".format(
+                            datetime.datetime.strftime(datetime.datetime.now(), "%Y_%m_%d")),
+                        level=logging.INFO)
+
 admin_id = int(os.environ.get("ADMIN_ID", 0))
 channel_id = os.environ.get("CHANNEL_ID")
+
+
+def _log_message_data(message):
+    result = dict()
+    result["date"] = message["date"].isoformat()
+    result["chat_id"] = message["chat"]["id"]
+    result["username"] = message["chat"]["username"] or message["chat"]["last_name"] or message["chat"]["first_name"]
+    result["text"] = message["text"]
+    return json.dumps(result).replace("\"", "\'")
 
 
 class JobsInfo(object):
@@ -57,6 +80,81 @@ class JobsInfo(object):
         return key in self._jobs
 
 
+def _get_connection(connection):
+    conn = PostgreSQLDriver(connection)
+    db = conn.get_db()
+    cur = conn.cursor(db)
+    return db, cur
+
+
+class JobsDBInfo(JobsInfo):
+    def __init__(self, connection):
+        super().__init__("")
+        self._connection = connection
+
+    def save(self):
+        db, cur = _get_connection(self._connection)
+        cur.execute("DELETE FROM jobcache;")
+        rows = []
+        for key, job in self.jobs.items():
+            data = dict()
+            data["job_id"] = key
+            for prop in ["interval", "repeat"]:
+                data[prop] = getattr(job, prop)
+            for prop in ["region", "chat_id", "new"]:
+                data[prop] = job.context.get(prop)
+            for prop, i in {"cases": 0, "deaths": 1, "recovery": 2}.items():
+                data[prop] = job.context.get("last")[i]
+            rows.append(data)
+        if rows:
+            cur.executemany("""INSERT INTO jobcache 
+            (job_id, interval, repeat, region, chat_id, only_new, last_cases, last_deaths, last_recovery)
+            VALUES (%(job_id)s, %(interval)s, %(repeat)s, %(region)s, %(chat_id)s, %(new)s, 
+                    %(cases)s, %(deaths)s, %(recovery)s); """, rows)
+        db.commit()
+        db.close()
+
+    def load(self):
+        db, cur = _get_connection(self._connection)
+        cur.execute("""
+        SELECT job_id, interval, repeat, region, chat_id, only_new, last_cases, last_deaths, last_recovery 
+        FROM jobcache """)
+        jobs = dict()
+        for row in cur.fetchall():
+            data = dict()
+            data["interval"] = row[1]
+            data["repeat"] = row[2]
+            data["context"] = {"region": row[3], "chat_id": row[4], "new": row[5],
+                               "last": [row[6], row[7], row[8]]}
+            jobs[row[0]] = data
+        db.close()
+        return jobs
+
+
+class DBLogHandler(logging.Handler):
+    def __init__(self, connection):
+        super().__init__()
+        self._connection = connection
+
+    def emit(self, record):
+        message = record.getMessage()
+        command = re.findall(r'Arrive ([/\w]+) (?:command|message) "([^"]+)"', message)
+        if command:
+            command_string = command[0][1]
+            args = json.loads(command_string.replace("\'", "\""))
+            db, cur = _get_connection(self._connection)
+            data = dict()
+            data["chat_id"] = args["chat_id"]
+            data["user_name"] = args["username"]
+            data["command"] = command[0][0]
+            data["args"] = args["text"]
+            cur.execute("""INSERT INTO botlog 
+                        (chat_id, user_name, command, args)
+                        VALUES (%(chat_id)s, %(user_name)s, %(command)s, %(args)s); """, data)
+            db.commit()
+            db.close()
+
+
 def start(update, context):
     """Send a message when the command /start is issued."""
     update.message.reply_text("""Olá. Sou um bot de dados de casos de COVID-19 no Brasil.
@@ -65,7 +163,7 @@ def start(update, context):
 
 def help(update, context):
     """Send a message when the command /help is issued."""
-    logger.info('Arrive /help command "%s"', update.effective_message)
+    logger.info('Arrive /help command "%s"', _log_message_data(update.effective_message))
     update.message.reply_text("""Comandos que você pode enviar
     /start : inicia o bot
     /help : mostra a ajuda
@@ -84,7 +182,7 @@ def error(update, context):
 
 
 def test(update, context):
-    logger.info('Arrive /test command "%s"', update.effective_message)
+    logger.info('Arrive /test command "%s"', _log_message_data(update.effective_message))
     sources = [G1Data(), BingData(), GovBR()]
     result = []
     for corona in sources:
@@ -95,7 +193,7 @@ def test(update, context):
 
 
 def stats(update, context):
-    logger.info('Arrive /stats command "%s"', update.effective_message)
+    logger.info('Arrive /stats command "%s"', _log_message_data(update.effective_message))
     sources = [G1Data(), BingData(), GovBR()]
     result = []
     for corona in sources:
@@ -106,7 +204,7 @@ def stats(update, context):
 
 
 def general(update, context):
-    logger.info('Arrive text message "%s"', update.effective_message)
+    logger.info('Arrive text message "%s"', _log_message_data(update.effective_message))
     region = update.message.text
     result = []
     sources = [G1Data(region), BingData(region), GovBR(region)]
@@ -140,7 +238,7 @@ def _get_chart(regions):
 
 
 def chart(update, context):
-    logger.info('Arrive /chart command "%s"', update.effective_message)
+    logger.info('Arrive /chart command "%s"', _log_message_data(update.effective_message))
     regions = " ".join(context.args).split(",")
     chart_data = _get_chart(regions)
     if chart_data:
@@ -158,9 +256,9 @@ def inline_query(update, context):
     if not query:
         return
 
-    logger.info('Arrive /inline query "%s"', update.inline_query)
+    logger.info('Query inline "%s"', update.inline_query)
 
-    sources = [G1Data(query), BingData(query)]
+    sources = [G1Data(query), BingData(query), GovBR(query)]
     results = []
 
     for corona in sources:
@@ -213,12 +311,17 @@ def refresh_data(context):
                                  parse_mode=ParseMode.MARKDOWN)
 
 
-_jobs = JobsInfo("logs/jobs.pickle")
+if os.environ.get("USE_DB", True):
+    _connection = {"url": os.environ.get("POSTGRESQL_URL")}
+    logger.addHandler(DBLogHandler(_connection))
+    _jobs = JobsDBInfo(_connection)
+else:
+    _jobs = JobsInfo("logs/jobs.pickle")
 
 
 def set_timer(update, context):
     """Adiciona uma região na lista de jobs"""
-    logger.info('Arrive /listen command "%s"', update.effective_message)
+    logger.info('Arrive /listen command "%s"', _log_message_data(update.effective_message))
     chat_id = update.message.chat_id
     try:
         region = context.args[0]
@@ -230,8 +333,9 @@ def set_timer(update, context):
 
         # Add job to queue
         job = context.job_queue.run_repeating(on_change_notifier, minutes * 60, first=5,
-                                              context={"chat_id": chat_id, "region": region, "new": only_new, "last": []})
-        _jobs.push(chat_id, job)
+                                              context={"chat_id": str(chat_id), "region": region,
+                                                       "new": only_new, "last": [0, 0, 0]})
+        _jobs.push(str(chat_id), job)
         _jobs.save()
 
         update.message.reply_text('Monitoramento ativado!')
@@ -242,8 +346,8 @@ def set_timer(update, context):
 
 def unset_timer(update, context):
     """Remove o job programado"""
-    logger.info('Arrive /mute command "%s"', update.effective_message)
-    chat_id = update.message.chat_id
+    logger.info('Arrive /mute command "%s"', _log_message_data(update.effective_message))
+    chat_id = str(update.message.chat_id)
 
     if not _jobs.exists(chat_id):
         update.message.reply_text('Nenhum monitoramento ativo')
@@ -278,7 +382,7 @@ def main():
     dp.add_handler(MessageHandler(Filters.command, unknown))
 
     # job para atualizar os dados das fontes e atualizar o canal caso haja novos casos
-    dp.job_queue.run_repeating(refresh_data, 300, first=5, context={"chat_id": channel_id, "region": "BR"})
+    # dp.job_queue.run_repeating(refresh_data, 300, first=5, context={"chat_id": channel_id, "region": "BR"})
 
     # carrega a lista de jobs que estavam programados
     jobs = _jobs.load()
