@@ -362,7 +362,7 @@ def unset_timer(update, context):
 
 def main():
     """Start the bot."""
-    locale.setlocale(locale.LC_ALL, "pt_BR")
+    # locale.setlocale(locale.LC_ALL, "pt_BR")
 
     # Certifique-se que exista uma variavel de ambiente com o nome TELEGRAM_TOKEN
     # setada com o token do seu bot
