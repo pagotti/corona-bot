@@ -34,8 +34,10 @@ else:
                             datetime.datetime.strftime(datetime.datetime.now(), "%Y_%m_%d")),
                         level=logging.INFO)
 
+# futuros comandos administrativos
 admin_id = int(os.environ.get("ADMIN_ID", 0))
-channel_id = os.environ.get("CHANNEL_ID")
+# ajuste para o nome do canal a receber as atualizações
+channel_id = os.environ.get("CHANNEL_ID", "")
 
 
 def _log_message_data(message):
@@ -181,17 +183,6 @@ def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
-def test(update, context):
-    logger.info('Arrive /test command "%s"', _log_message_data(update.effective_message))
-    sources = [G1Data(), BingData(), GovBR()]
-    result = []
-    for corona in sources:
-        corona.refresh()
-        if corona.last_date:
-            result.append(corona.description)
-    update.message.reply_markdown("\n".join(result))
-
-
 def stats(update, context):
     logger.info('Arrive /stats command "%s"', _log_message_data(update.effective_message))
     sources = [G1Data(), BingData(), GovBR()]
@@ -200,7 +191,10 @@ def stats(update, context):
         corona.refresh()
         if corona.last_date:
             result.append(corona.description)
-    update.message.reply_markdown("\n".join(result))
+    if result:
+        update.message.reply_markdown("\n".join(result))
+    else:
+        update.message.reply_text("Dados não disponíveis. Tente mais tarde")
 
 
 def general(update, context):
@@ -300,15 +294,25 @@ def refresh_data(context):
     G1Data.load()
     GovBR.load()
 
-    corona = BingData("BR")
-    corona.refresh()
-    corona_data = corona.get_data()
-    last = context.job.context["last"] if "last" in context.job.context else corona_data
-    changes = [1 for i, j in zip(corona_data, last) if i > j]
-    if changes:
-        context.job.context["last"] = corona_data
-        context.bot.send_message(context.job.context["chat_id"], text=corona.description,
-                                 parse_mode=ParseMode.MARKDOWN)
+    job_context = context.job.context
+
+    # busca atualizações de dados nos data sources para informar no canal
+    if job_context["chat_id"]:
+        region = job_context["region"]
+        sources = [G1Data(region), BingData(region), GovBR(region)]
+        for corona in sources:
+            corona.refresh()
+            if corona.last_date:
+                corona_data = corona.get_data()
+                if corona.data_source not in job_context:
+                    job_context[corona.data_source] = {"last": corona_data}
+                else:
+                    last = job_context[corona.data_source]["last"]
+                    changes = [1 for i, j in zip(corona_data, last) if i > j]
+                    if changes:
+                        job_context[corona.data_source]["last"] = corona_data
+                        context.bot.send_message(job_context["chat_id"], text=corona.description,
+                                                 parse_mode=ParseMode.MARKDOWN)
 
 
 if os.environ.get("USE_DB", True):
@@ -376,13 +380,12 @@ def main():
     dp.add_handler(CommandHandler("chart", chart))
     dp.add_handler(CommandHandler("listen", set_timer, pass_args=True, pass_job_queue=True))
     dp.add_handler(CommandHandler("mute", unset_timer))
-    dp.add_handler(CommandHandler("test", test))
     dp.add_handler(MessageHandler(Filters.text & ~Filters.update.channel_post, general))
     dp.add_handler(InlineQueryHandler(inline_query))
     dp.add_handler(MessageHandler(Filters.command, unknown))
 
     # job para atualizar os dados das fontes e atualizar o canal caso haja novos casos
-    # dp.job_queue.run_repeating(refresh_data, 300, first=5, context={"chat_id": channel_id, "region": "BR"})
+    dp.job_queue.run_repeating(refresh_data, 600, first=5, context={"chat_id": channel_id, "region": "BR"})
 
     # carrega a lista de jobs que estavam programados
     jobs = _jobs.load()
