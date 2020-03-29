@@ -1,5 +1,7 @@
 /*
 Schema do banco Postgre SQL do bot
+Substitua "yldzrofu" pelo nome do usuário do seu banco
+
 */
 
 SET default_tablespace = '';
@@ -59,3 +61,29 @@ ALTER TABLE public.botlog OWNER TO "yldzrofu";
 
 ALTER TABLE ONLY public.botlog
     ADD CONSTRAINT botlog_pkey PRIMARY KEY (id);
+
+
+CREATE SEQUENCE public.cases_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE public.cases_id_seq OWNER TO "yldzrofu";
+
+CREATE TABLE public.cases (
+    id bigint DEFAULT nextval('public.cases_id_seq'::regclass) NOT NULL,
+    data_source character varying(50),
+    region character varying(50),
+    cases int DEFAULT 0,
+	deaths int DEFAULT 0,
+	recovery int DEFAULT 0,
+	source_date timestamp with time zone,
+    create_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+ALTER TABLE public.cases OWNER TO "yldzrofu";
+
+ALTER TABLE ONLY public.cases
+    ADD CONSTRAINT cases_pkey PRIMARY KEY (id);

@@ -171,6 +171,9 @@ class BingData(CoronaData):
         cases = []
         for k, v in BingData.categories().items():
             cases.append("{}: *{:n}*".format(v, self._bing.get(k, 0) or 0))
+        if (self._bing.get("totalConfirmed", 0) or 0) > 0:
+            death_rate = (self._bing.get("totalDeaths", 0) or 0) / self._bing.get("totalConfirmed", 0)
+            cases.append("Mortalidade: *{:2.1%}*".format(death_rate))
         return ", ".join(cases)
 
     def _update_stats(self):
@@ -228,8 +231,7 @@ class G1Data(CoronaData):
             return case_less_eq(city,  self._region)
 
     def get_data(self):
-        data_keys = ["cases"]
-        return [self._data.get(k, 0) or 0 for k in data_keys]
+        return [self._data.get("cases", 0) or 0, 0, 0]
 
     def get_series(self):
         cases = []
@@ -271,7 +273,7 @@ class G1Data(CoronaData):
             G1Data().load()
         data = copy.deepcopy(_g1_data)
         date = re.findall(r"(\d{1,2})/(\d{1,2})/(\d{4}), às (\d{1,2}:\d{1,2})", data["updated_at"])[0]
-        self._version = parser.parse("{}-{}-{} {}".format(date[2], date[1], date[0], date[3])).timestamp()
+        self._version = parser.parse("{}-{}-{}T{}:00-0300".format(date[2], date[1], date[0], date[3])).timestamp()
         self._raw_data = data
         return True
 
@@ -310,6 +312,9 @@ class GovBR(CoronaData):
         for k, v in GovBR.categories().items():
             if k in self._gov:
                 cases.append("{}: *{:n}*".format(v, self._gov.get(k, 0)))
+        if self._gov.get("cases", 0) > 0:
+            death_rate = self._gov.get("deaths", 0) / self._gov.get("cases", 0)
+            cases.append("Mortalidade: *{:2.1%}*".format(death_rate))
         return ", ".join(cases)
 
     def _update_stats(self):

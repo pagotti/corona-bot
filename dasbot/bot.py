@@ -7,25 +7,29 @@ Modulo bot - Mantem as funções que gerenciam o bot
 
 import os
 import logging
-import locale
 import pickle
 import datetime
 import re
 import json
 
 from uuid import uuid4
-
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
 from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode
-from telegram.utils.helpers import escape_markdown
+
 from dasbot.corona import G1Data, BingData, GovBR, SeriesChart
-from dasbot.db import PostgreSQLDriver
+from dasbot.db import JobCacheRepo, BotLogRepo, CasesRepo
 
 
 # Enable logging
 logger = logging.getLogger(__name__)
 
-if os.environ.get("USE_DB", True):
+use_db = os.environ.get("USE_DB", False)
+# futuros comandos administrativos
+admin_id = int(os.environ.get("ADMIN_ID", 0))
+# ajuste para o nome do canal a receber as atualizações
+channel_id = os.environ.get("CHANNEL_ID", "")
+
+if use_db:
     logging.basicConfig(level=logging.INFO)
 else:
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -33,11 +37,6 @@ else:
                         filename="logs/log_{}.log".format(
                             datetime.datetime.strftime(datetime.datetime.now(), "%Y_%m_%d")),
                         level=logging.INFO)
-
-# futuros comandos administrativos
-admin_id = int(os.environ.get("ADMIN_ID", 0))
-# ajuste para o nome do canal a receber as atualizações
-channel_id = os.environ.get("CHANNEL_ID", "")
 
 
 def _log_message_data(message):
@@ -82,22 +81,12 @@ class JobsInfo(object):
         return key in self._jobs
 
 
-def _get_connection(connection):
-    conn = PostgreSQLDriver(connection)
-    db = conn.get_db()
-    cur = conn.cursor(db)
-    return db, cur
-
-
 class JobsDBInfo(JobsInfo):
-    def __init__(self, connection):
+    def __init__(self):
         super().__init__("")
-        self._connection = connection
 
     def save(self):
-        db, cur = _get_connection(self._connection)
-        cur.execute("DELETE FROM jobcache;")
-        rows = []
+        repo = JobCacheRepo()
         for key, job in self.jobs.items():
             data = dict()
             data["job_id"] = key
@@ -107,36 +96,28 @@ class JobsDBInfo(JobsInfo):
                 data[prop] = job.context.get(prop)
             for prop, i in {"cases": 0, "deaths": 1, "recovery": 2}.items():
                 data[prop] = job.context.get("last")[i]
-            rows.append(data)
-        if rows:
-            cur.executemany("""INSERT INTO jobcache 
-            (job_id, interval, repeat, region, chat_id, only_new, last_cases, last_deaths, last_recovery)
-            VALUES (%(job_id)s, %(interval)s, %(repeat)s, %(region)s, %(chat_id)s, %(new)s, 
-                    %(cases)s, %(deaths)s, %(recovery)s); """, rows)
-        db.commit()
-        db.close()
+            repo.add(data)
+        repo.save()
 
     def load(self):
-        db, cur = _get_connection(self._connection)
-        cur.execute("""
-        SELECT job_id, interval, repeat, region, chat_id, only_new, last_cases, last_deaths, last_recovery 
-        FROM jobcache """)
         jobs = dict()
-        for row in cur.fetchall():
+        repo = JobCacheRepo()
+        repo.load()
+        for row in repo.rows:
             data = dict()
-            data["interval"] = row[1]
-            data["repeat"] = row[2]
-            data["context"] = {"region": row[3], "chat_id": row[4], "new": row[5],
-                               "last": [row[6], row[7], row[8]]}
-            jobs[row[0]] = data
-        db.close()
+            data["interval"] = row["interval"]
+            data["repeat"] = row["repeat"]
+            data["context"] = {"region": row["region"],
+                               "chat_id": row["chat_id"],
+                               "new": row["new"],
+                               "last": [row["cases"], row["deaths"], row["recovery"]]}
+            jobs[row["job_id"]] = data
         return jobs
 
 
 class DBLogHandler(logging.Handler):
-    def __init__(self, connection):
+    def __init__(self):
         super().__init__()
-        self._connection = connection
 
     def emit(self, record):
         message = record.getMessage()
@@ -144,17 +125,14 @@ class DBLogHandler(logging.Handler):
         if command:
             command_string = command[0][1]
             args = json.loads(command_string.replace("\'", "\""))
-            db, cur = _get_connection(self._connection)
+            repo = BotLogRepo()
             data = dict()
             data["chat_id"] = args["chat_id"]
-            data["user_name"] = args["username"]
+            data["username"] = args["username"]
             data["command"] = command[0][0]
             data["args"] = args["text"]
-            cur.execute("""INSERT INTO botlog 
-                        (chat_id, user_name, command, args)
-                        VALUES (%(chat_id)s, %(user_name)s, %(command)s, %(args)s); """, data)
-            db.commit()
-            db.close()
+            repo.add(data)
+            repo.save()
 
 
 def start(update, context):
@@ -297,28 +275,40 @@ def refresh_data(context):
     job_context = context.job.context
 
     # busca atualizações de dados nos data sources para informar no canal
-    if job_context["chat_id"]:
-        region = job_context["region"]
-        sources = [G1Data(region), BingData(region), GovBR(region)]
-        for corona in sources:
-            corona.refresh()
-            if corona.last_date:
-                corona_data = corona.get_data()
-                if corona.data_source not in job_context:
-                    job_context[corona.data_source] = {"last": corona_data}
-                else:
-                    last = job_context[corona.data_source]["last"]
-                    changes = [1 for i, j in zip(corona_data, last) if i > j]
-                    if changes:
-                        job_context[corona.data_source]["last"] = corona_data
+    # e para guardar na tabela de casos, se o banco estiver ativo
+    region = job_context["region"]
+    sources = [G1Data(region), BingData(region), GovBR(region)]
+    for corona in sources:
+        corona.refresh()
+        if corona.last_date:
+            corona_data = corona.get_data()
+            if corona.data_source not in job_context:
+                job_context[corona.data_source] = {"last": corona_data}
+            else:
+                last = job_context[corona.data_source]["last"]
+                changes = [1 for i, j in zip(corona_data, last) if i > j]
+                if changes:
+                    job_context[corona.data_source]["last"] = corona_data
+                    if job_context["chat_id"]:
                         context.bot.send_message(job_context["chat_id"], text=corona.description,
                                                  parse_mode=ParseMode.MARKDOWN)
+                    if use_db:
+                        repo = CasesRepo()
+                        data = {
+                            "source": corona.data_source,
+                            "region": region,
+                            "cases": corona_data[0],
+                            "deaths": corona_data[1],
+                            "recovery": corona_data[2],
+                            "date": corona.last_date
+                        }
+                        repo.add(data)
+                        repo.save()
 
 
-if os.environ.get("USE_DB", True):
-    _connection = {"url": os.environ.get("POSTGRESQL_URL")}
-    logger.addHandler(DBLogHandler(_connection))
-    _jobs = JobsDBInfo(_connection)
+if use_db:
+    logger.addHandler(DBLogHandler())
+    _jobs = JobsDBInfo()
 else:
     _jobs = JobsInfo("logs/jobs.pickle")
 
@@ -366,8 +356,6 @@ def unset_timer(update, context):
 
 def main():
     """Start the bot."""
-    # locale.setlocale(locale.LC_ALL, "pt_BR")
-
     # Certifique-se que exista uma variavel de ambiente com o nome TELEGRAM_TOKEN
     # setada com o token do seu bot
     updater = Updater(os.environ.get("TELEGRAM_TOKEN", "Get token on bot father!"), use_context=True)
@@ -396,6 +384,7 @@ def main():
         else:
             _jobs.push(key, dp.job_queue.run_once(on_change_notifier,
                                                   data.get("interval", 300), context=data.get("context")))
+
 
     # log all errors
     dp.add_error_handler(error)
