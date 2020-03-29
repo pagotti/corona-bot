@@ -19,6 +19,7 @@ from dateutil import parser
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 from PIL import Image
+from bs4 import BeautifulSoup
 
 
 br_ufs = {
@@ -359,6 +360,82 @@ class GovBR(CoronaData):
     def load():
         GovBR.load_json("PortalGeral", "br")
         GovBR.load_json("PortalMapa", "states")
+
+
+_world_data = {}
+
+
+class WorldOMeterData(CoronaData):
+
+    @staticmethod
+    def categories(): return {
+        "cases": "Confirmados",
+        "deaths": "Mortes",
+        "recovery": "Recuperados"
+    }
+
+    def __init__(self, region=None):
+        super().__init__()
+        self._data_source = "World-o-meter"
+        self._region = region if region else "BR"
+        self._data = {}
+
+    def get_data(self):
+        return [self._data.get(k, 0) or 0 for k in WorldOMeterData.categories().keys()]
+
+    def _get_cases(self):
+        cases = []
+        for k, v in WorldOMeterData.categories().items():
+            if k in self._data:
+                cases.append("{}: *{:n}*".format(v, self._data.get(k, 0)))
+        if self._data.get("cases", 0) > 0:
+            death_rate = self._data.get("deaths", 0) / self._data.get("cases", 0)
+            cases.append("Mortalidade: *{:2.1%}*".format(death_rate))
+        return ", ".join(cases)
+
+    def _update_stats(self):
+        if self._region == "BR":
+            for k in WorldOMeterData.categories():
+                self._data[k] = int(self._raw_data[k].replace(",", ""))
+            self._version = parser.parse(self._raw_data["lastUpdated"]).timestamp()
+            self._last_date = datetime.fromtimestamp(self._version, pytz.timezone("America/Sao_Paulo"))
+
+    def _load_data(self):
+        if not _world_data:
+            WorldOMeterData.load()
+        self._raw_data = copy.deepcopy(_world_data)
+        return True
+
+    @staticmethod
+    def _last_update_matcher(tag):
+        return tag.name == 'div' and \
+               tag.text.startswith("Last updated")
+
+    @staticmethod
+    def _brazil_matcher(tag):
+        return tag.name == 'a' and \
+               tag.has_attr('href') and \
+               tag['href'] == 'country/brazil/'
+
+    @staticmethod
+    def load():
+        global _world_data
+        response = _http_get("https://www.worldometers.info/coronavirus/")
+        if response:
+            main_page = BeautifulSoup(response, 'html.parser')
+            last_date_tag = main_page.find(WorldOMeterData._last_update_matcher)
+            if last_date_tag:
+                match = re.findall(r"(\w+\s\d+,\s\d+,\s\d+:\d+\sGMT)$", last_date_tag.text)
+                if match:
+                    _world_data["lastUpdated"] = match[0]
+            data_tag = main_page.find(WorldOMeterData._brazil_matcher)
+            cols = []
+            for el in data_tag.parent.find_next_siblings("td"):
+                cols.append(el.text)
+            if cols:
+                _world_data["cases"] = cols[0]
+                _world_data["deaths"] = cols[2]
+                _world_data["recovery"] = cols[4]
 
 
 class SeriesChart(object):

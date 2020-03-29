@@ -16,7 +16,7 @@ from uuid import uuid4
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
 from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode
 
-from dasbot.corona import G1Data, BingData, GovBR, SeriesChart
+from dasbot.corona import G1Data, BingData, GovBR, WorldOMeterData, SeriesChart
 from dasbot.db import JobCacheRepo, BotLogRepo, CasesRepo
 
 
@@ -163,7 +163,7 @@ def error(update, context):
 
 def stats(update, context):
     logger.info('Arrive /stats command "%s"', _log_message_data(update.effective_message))
-    sources = [G1Data(), BingData(), GovBR()]
+    sources = [G1Data(), BingData(), GovBR(), WorldOMeterData()]
     result = []
     for corona in sources:
         corona.refresh()
@@ -179,7 +179,7 @@ def general(update, context):
     logger.info('Arrive text message "%s"', _log_message_data(update.effective_message))
     region = update.message.text
     result = []
-    sources = [G1Data(region), BingData(region), GovBR(region)]
+    sources = [G1Data(region), BingData(region), GovBR(region), WorldOMeterData(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
@@ -230,7 +230,7 @@ def inline_query(update, context):
 
     logger.info('Query inline "%s"', update.inline_query)
 
-    sources = [G1Data(query), BingData(query), GovBR(query)]
+    sources = [G1Data(query), BingData(query), GovBR(query), WorldOMeterData(query)]
     results = []
 
     for corona in sources:
@@ -271,13 +271,14 @@ def refresh_data(context):
     BingData.load()
     G1Data.load()
     GovBR.load()
+    WorldOMeterData.load()
 
     job_context = context.job.context
 
     # busca atualizações de dados nos data sources para informar no canal
     # e para guardar na tabela de casos, se o banco estiver ativo
     region = job_context["region"]
-    sources = [G1Data(region), BingData(region), GovBR(region)]
+    sources = [G1Data(region), BingData(region), GovBR(region), WorldOMeterData(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
@@ -373,9 +374,11 @@ def main():
     dp.add_handler(MessageHandler(Filters.command, unknown))
 
     # job para atualizar os dados das fontes e atualizar o canal caso haja novos casos
-    dp.job_queue.run_repeating(refresh_data, 600, first=5, context={"chat_id": channel_id, "region": "BR"})
+    refresh_time = int(os.environ.get("REFRESH_TIME", "600"))
+    dp.job_queue.run_repeating(refresh_data, refresh_time, first=5, context={"chat_id": channel_id, "region": "BR"})
 
     # carrega a lista de jobs que estavam programados
+
     jobs = _jobs.load()
     for key, data in jobs.items():
         if data.get("repeat", True):
@@ -384,7 +387,6 @@ def main():
         else:
             _jobs.push(key, dp.job_queue.run_once(on_change_notifier,
                                                   data.get("interval", 300), context=data.get("context")))
-
 
     # log all errors
     dp.add_error_handler(error)
