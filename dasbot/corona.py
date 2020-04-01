@@ -237,24 +237,24 @@ class G1Data(CoronaData):
         return [self._data.get("cases", 0) or 0, 0, 0]
 
     def get_series(self):
-        cases = []
+        cases = {}
         for case in self._raw_data["docs"]:
             if self._match_region(case["city_name"], case["state"]):
                 try:
                     date = datetime.strptime("{}".format(case.get("date")), "%Y-%m-%d")
-                    acc = cases[-1]["cases"] if len(cases) > 0 else 0
-                    if len(cases) > 0:
-                        acc = cases[-1]["cases"]
-                        if cases[-1]["date"] < date:
-                            cases.append({"date": date, "cases": case.get("cases", 0) + acc})
-                        else:
-                            cases[-1]["cases"] = case.get("cases", 0) + acc
-                    else:
-                        cases.append({"date": date, "cases": case.get("cases", 0)})
+                    cases[date] = cases.get(date, 0) + case.get("cases", 0)
                 except ValueError:
                     pass
 
-        return {c["date"]: [c["cases"], 0, 0] for c in cases}
+        dates = [k for k in cases.keys()]
+        dates.sort()
+        result = {}
+        acc = 0
+        for d in dates:
+            acc = cases.get(d, 0) + acc
+            result[d] = [acc, 0, 0]
+
+        return result
 
     def _get_cases(self):
         cases = []
