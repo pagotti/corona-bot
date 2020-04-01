@@ -117,8 +117,8 @@ class CoronaData(object):
         return self._region
 
     def refresh(self):
-        self._load_data()
-        self._update_stats()
+        if self._load_data():
+            self._update_stats()
 
     def get_data(self):
         """Implementado na subclasse para retornar os dados em um array
@@ -190,10 +190,12 @@ class BingData(CoronaData):
         if not _bing_data:
             BingData.load()
         data = copy.deepcopy(_bing_data)
-        version = parser.parse(data["lastUpdated"]).timestamp()
-        self._version = version
-        self._raw_data = data
-        return True
+        if data:
+            version = parser.parse(data["lastUpdated"]).timestamp()
+            self._version = version
+            self._raw_data = data
+            return True
+        return False
 
     @staticmethod
     def load():
@@ -273,10 +275,12 @@ class G1Data(CoronaData):
         if not _g1_data:
             G1Data().load()
         data = copy.deepcopy(_g1_data)
-        date = re.findall(r"(\d{1,2})/(\d{1,2})/(\d{4}), às (\d{1,2}:\d{1,2})", data["updated_at"])[0]
-        self._version = parser.parse("{}-{}-{}T{}:00-0300".format(date[2], date[1], date[0], date[3])).timestamp()
-        self._raw_data = data
-        return True
+        if data:
+            date = re.findall(r"(\d{1,2})/(\d{1,2})/(\d{4}), às (\d{1,2}:\d{1,2})", data["updated_at"])[0]
+            self._version = parser.parse("{}-{}-{}T{}:00-0300".format(date[2], date[1], date[0], date[3])).timestamp()
+            self._raw_data = data
+            return True
+        return False
 
     @staticmethod
     def load():
@@ -343,7 +347,9 @@ class GovBR(CoronaData):
         if not _gov_br_data:
             GovBR.load()
         self._raw_data = copy.deepcopy(_gov_br_data)
-        return True
+        if self._raw_data:
+            return True
+        return False
     
     @staticmethod
     def load_json(path, key):
@@ -404,7 +410,9 @@ class WorldOMeterData(CoronaData):
         if not _world_data:
             WorldOMeterData.load()
         self._raw_data = copy.deepcopy(_world_data)
-        return True
+        if self._raw_data:
+            return True
+        return False
 
     @staticmethod
     def _last_update_matcher(tag):

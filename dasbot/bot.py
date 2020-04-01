@@ -16,7 +16,7 @@ from uuid import uuid4
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
 from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode
 
-from dasbot.corona import G1Data, BingData, GovBR, WorldOMeterData, SeriesChart
+from dasbot.corona import G1Data, GovBR, WorldOMeterData, SeriesChart
 from dasbot.db import JobCacheRepo, BotLogRepo, CasesRepo
 
 
@@ -163,7 +163,7 @@ def error(update, context):
 
 def stats(update, context):
     logger.info('Arrive /stats command "%s"', _log_message_data(update.effective_message))
-    sources = [G1Data(), BingData(), GovBR(), WorldOMeterData()]
+    sources = [G1Data(), GovBR(), WorldOMeterData()]
     result = []
     for corona in sources:
         corona.refresh()
@@ -179,7 +179,7 @@ def general(update, context):
     logger.info('Arrive text message "%s"', _log_message_data(update.effective_message))
     region = update.message.text
     result = []
-    sources = [G1Data(region), BingData(region), GovBR(region), WorldOMeterData(region)]
+    sources = [G1Data(region), GovBR(region), WorldOMeterData(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
@@ -230,7 +230,7 @@ def inline_query(update, context):
 
     logger.info('Query inline "%s"', update.inline_query)
 
-    sources = [G1Data(query), BingData(query), GovBR(query), WorldOMeterData(query)]
+    sources = [G1Data(query), GovBR(query), WorldOMeterData(query)]
     results = []
 
     for corona in sources:
@@ -252,7 +252,7 @@ def unknown(update, context):
 
 def on_change_notifier(context):
     region = context.job.context["region"]
-    sources = [BingData(region)]
+    sources = [G1Data(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
@@ -268,7 +268,6 @@ def on_change_notifier(context):
 
 
 def refresh_data(context):
-    BingData.load()
     G1Data.load()
     GovBR.load()
     WorldOMeterData.load()
@@ -278,7 +277,7 @@ def refresh_data(context):
     # busca atualizações de dados nos data sources para informar no canal
     # e para guardar na tabela de casos, se o banco estiver ativo
     region = job_context["region"]
-    sources = [G1Data(region), BingData(region), GovBR(region), WorldOMeterData(region)]
+    sources = [G1Data(region), GovBR(region), WorldOMeterData(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
