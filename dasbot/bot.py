@@ -16,7 +16,7 @@ from uuid import uuid4
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
 from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode
 
-from dasbot.corona import G1Data, GovBR, WorldOMeterData, SeriesChart
+from dasbot.corona import G1Data, GovBR, WorldOMeterData, SeriesChart, DataPanel
 from dasbot.db import JobCacheRepo, BotLogRepo, CasesRepo
 
 
@@ -163,14 +163,16 @@ def error(update, context):
 
 def stats(update, context):
     logger.info('Arrive /stats command "%s"', _log_message_data(update.effective_message))
-    sources = [G1Data(), GovBR(), WorldOMeterData()]
+    sources = [GovBR(), G1Data(), WorldOMeterData()]
     result = []
     for corona in sources:
         corona.refresh()
         if corona.last_date:
-            result.append(corona.description)
+            result.append(corona)
+
     if result:
-        update.message.reply_markdown("\n".join(result))
+        panel = DataPanel(*result)
+        update.message.reply_photo(photo=panel.image())
     else:
         update.message.reply_text("Dados não disponíveis. Tente mais tarde")
 
@@ -179,14 +181,15 @@ def general(update, context):
     logger.info('Arrive text message "%s"', _log_message_data(update.effective_message))
     region = update.message.text
     result = []
-    sources = [G1Data(region), GovBR(region), WorldOMeterData(region)]
+    sources = [GovBR(region), G1Data(region), WorldOMeterData(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
-            result.append(corona.description)
+            result.append(corona)
 
     if result:
-        update.message.reply_markdown("\n".join(result))
+        panel = DataPanel(*result)
+        update.message.reply_photo(photo=panel.image())
     else:
         update.message.reply_text("""Região não reconhecida ou sem dados. 
 Envie a sigla do estado em maiúsculas, nomes de cidade com acentos. 

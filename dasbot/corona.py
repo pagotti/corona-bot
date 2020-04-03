@@ -18,9 +18,8 @@ from datetime import datetime
 from dateutil import parser
 from urllib.request import urlopen, Request
 from urllib.error import URLError
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from bs4 import BeautifulSoup
-
 
 br_ufs = {
  'RO': {'uid': '11', 'name': 'Rondônia'},
@@ -145,64 +144,6 @@ class CoronaData(object):
     def _load_data(self):
         """Carrega os dados e retorna True se houver uma nova versão disponível"""
         pass
-
-
-_bing_data = {}
-
-
-class BingData(CoronaData):
-
-    @staticmethod
-    def categories(): return {
-        "totalConfirmed": "Confirmados",
-        "totalDeaths": "Mortes",
-        "totalRecovered": "Recuperados"
-    }
-
-    def __init__(self, region=None):
-        super().__init__()
-        self._data_source = "Bing.com"
-        self._region = region if region else "BR"
-
-    def get_data(self):
-        data_keys = ["totalConfirmed", "totalDeaths", "totalRecovered"]
-        return [self._bing.get(k, 0) or 0 for k in data_keys]
-
-    def _get_cases(self):
-        cases = []
-        for k, v in BingData.categories().items():
-            cases.append("{}: *{:n}*".format(v, self._bing.get(k, 0) or 0))
-        if (self._bing.get("totalConfirmed", 0) or 0) > 0:
-            death_rate = (self._bing.get("totalDeaths", 0) or 0) / self._bing.get("totalConfirmed", 0)
-            cases.append("Mortalidade: *{:2.1%}*".format(death_rate))
-        return ", ".join(cases)
-
-    def _update_stats(self):
-        self._bing = [k for k in self._raw_data.get("areas") if k["id"] == "brazil"]
-        if self._region != "BR" and self._bing:
-            region = br_ufs.get(self._region)["name"] if self._region in br_ufs else self._region
-            self._bing = [k for k in self._bing[0].get("areas") if case_less_eq(k["displayName"], region)]
-        if self._bing:
-            self._last_date = datetime.fromtimestamp(self._version, pytz.timezone("America/Sao_Paulo"))
-            self._bing = self._bing[0]
-
-    def _load_data(self):
-        if not _bing_data:
-            BingData.load()
-        data = copy.deepcopy(_bing_data)
-        if data:
-            version = parser.parse(data["lastUpdated"]).timestamp()
-            self._version = version
-            self._raw_data = data
-            return True
-        return False
-
-    @staticmethod
-    def load():
-        global _bing_data
-        response = _http_get("https://bing.com/covid/data")
-        if response:
-            _bing_data = json.loads(response.read())
 
 
 _g1_data = {}
@@ -330,7 +271,7 @@ class GovBR(CoronaData):
                 categories = {"cases": "total_confirmado", "deaths": "total_obitos"}
                 item = self._raw_data["br"]
             else:
-                categories = {"cases": "qtd_confirmado"}
+                categories = {"cases": "qtd_confirmado", "deaths": "qtd_obito"}
                 item = [k for k in self._raw_data["states"] if k.get("nome") == region]
 
             if item and len(item) == 1:
@@ -521,3 +462,48 @@ class SeriesChart(object):
         image.save(bio, 'PNG')
         bio.seek(0)
         return bio
+
+
+class DataPanel(object):
+
+    def __init__(self, *args):
+        self._series = args
+        self._font = ImageFont.truetype('res/RobotoMono-Bold.ttf', size=18)
+        self._font_lg = ImageFont.truetype('res/RobotoMono-Bold.ttf', size=24)
+        self._font_sm = ImageFont.truetype('res/RobotoMono-Bold.ttf', size=14)
+
+    def _draw_header(self, draw):
+        header = ["{:^10}".format(h) for h in ["Confirmados", "Mortes", "Recuperados"]]
+        header.insert(0, "{:16}".format("Fonte"))
+        draw.text((70, 100), "".join(header), fill="rgb(49,0,196)", font=self._font_lg)
+
+    def _draw_data(self, draw, corona, row):
+        draw.text((70, 165 + 72 * row), "{:20}".format(corona.data_source), fill="rgb(0,0,0)", font=self._font)
+        data = corona.get_data()
+        values = ["{:^10}".format("{:d}".format(v)) for v in data]
+        draw.text((310, 160 + 72 * row), "".join(values), fill="rgb(0,0,0)", font=self._font_lg)
+        text = "{}".format(datetime.strftime(corona.last_date, "%d-%m-%Y %H:%M"))
+        if data[0] and data[1]:
+            death_rate = (data[1] or 0) / data[0]
+            text = "{} - Letalidade: {:2.1%}".format(text, death_rate)
+        draw.text((70, 200 + 72 * row), text, fill="rgb(0,0,0)", font=self._font_sm)
+
+    def _draw_region(self, draw, region):
+        draw.text((70, 480), "Região: {}".format(region), fill="rgb(0,0,0)", font=self._font_lg)
+
+    def image(self):
+        image = Image.open('res/panel.png')
+        draw = ImageDraw.Draw(image)
+        self._draw_header(draw)
+        for i, corona in enumerate(self._series):
+            if i == 0:
+                self._draw_region(draw, corona.region)
+            self._draw_data(draw, corona, i)
+
+        bio = io.BytesIO()
+        bio.name = 'series.png'
+        image.save(bio, 'PNG')
+        bio.seek(0)
+        return bio
+
+
