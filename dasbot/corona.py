@@ -20,6 +20,8 @@ from urllib.request import urlopen, Request
 from urllib.error import URLError
 from PIL import Image, ImageDraw, ImageFont
 from bs4 import BeautifulSoup
+from gzip import decompress
+
 
 br_ufs = {
  'RO': {'uid': '11', 'name': 'Rondônia'},
@@ -183,7 +185,8 @@ class G1Data(CoronaData):
             if self._match_region(case["city_name"], case["state"]):
                 try:
                     date = datetime.strptime("{}".format(case.get("date")), "%Y-%m-%d")
-                    cases[date] = cases.get(date, 0) + case.get("cases", 0)
+                    if date <= datetime.today():
+                        cases[date] = cases.get(date, 0) + case.get("cases", 0)
                 except ValueError:
                     pass
 
@@ -226,7 +229,8 @@ class G1Data(CoronaData):
     @staticmethod
     def load():
         global _g1_data
-        response = _http_get("https://especiais.g1.globo.com/bemestar/coronavirus/mapa-coronavirus/data/brazil-cases.json")
+        url = "https://s3.glbimg.com/v1/AUTH_f4000752a75040fdb48c79179f03325f/public/coronavirus/brazil-cases.json"
+        response = _http_get(url)
         if response:
             _g1_data = json.loads(response.read())
 
@@ -385,6 +389,82 @@ class WorldOMeterData(CoronaData):
                 _world_data["cases"] = cols[0]
                 _world_data["deaths"] = cols[2]
                 _world_data["recovery"] = cols[4]
+
+
+_oms_data = {}
+
+
+class OMSData(CoronaData):
+
+    @staticmethod
+    def categories():
+        return {
+            "cases": "Confirmados",
+            "deaths": "Mortes"
+        }
+
+    def __init__(self, region=None):
+        super().__init__()
+        self._data_source = "OMS"
+        self._region = region if region else "BR"
+        self._oms = {}
+
+    def get_data(self):
+        return [self._oms.get("cases", 0), self._oms.get("deaths", 0), 0]
+
+    def get_series(self):
+        cases = {}
+        if self._raw_data and self._region == "BR":
+            for data in self._raw_data:
+                date = datetime.fromtimestamp(data[0] / 1000).astimezone(pytz.timezone("America/Sao_Paulo")).date()
+                if date <= datetime.today():
+                    cases[date] = {"c": data[6], "d": data[4]}
+
+        dates = [k for k in cases.keys()]
+        dates.sort()
+        result = {}
+        for d in dates:
+            result[d] = [cases[d].get("c", 0), cases[d].get("d", 0), 0]
+
+        return result
+
+    def _get_cases(self):
+        cases = []
+        for k, v in OMSData.categories().items():
+            cases.append("{}: *{:n}*".format(v, self._oms.get(k, 0)))
+        if self._oms.get("cases", 0) > 0:
+            death_rate = self._oms.get("deaths", 0) / self._oms.get("cases", 0)
+            cases.append("Mortalidade: *{:2.1%}*".format(death_rate))
+        return ", ".join(cases)
+
+    def _update_stats(self):
+        self._oms = {}
+        if self._raw_data and self._region == "BR":
+            categories = {"cases": 6, "deaths": 4}
+            for k, v in categories.items():
+                self._oms[k] = self._raw_data[-1][v]
+            date = datetime.fromtimestamp(self._raw_data[-1][0] / 1000)
+            self._last_date = date.astimezone(pytz.timezone("America/Sao_Paulo"))
+        else:
+            self._last_date = None
+
+    def _load_data(self):
+        if not _oms_data:
+            OMSData.load()
+        self._raw_data = copy.deepcopy(_oms_data)
+        if self._raw_data:
+            return True
+        return False
+
+    @staticmethod
+    def load():
+        global _oms_data
+        response = _http_get("https://dashboards-dev.sprinklr.com/data/9043/global-covid19-who-gis.json",
+                             {"Accept-Encoding": "gzip"})
+        if response:
+            response_data = decompress(response.read())
+            data = json.loads(response_data.decode("utf-8"))
+            _oms_data = [d for d in data["rows"] if d[1] == "BR"]
 
 
 class SeriesChart(object):

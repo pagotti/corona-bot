@@ -16,7 +16,7 @@ from uuid import uuid4
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
 from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode
 
-from dasbot.corona import G1Data, GovBR, WorldOMeterData, SeriesChart, DataPanel
+from dasbot.corona import G1Data, GovBR, WorldOMeterData, OMSData, SeriesChart, DataPanel
 from dasbot.db import JobCacheRepo, BotLogRepo, CasesRepo
 
 
@@ -163,7 +163,7 @@ def error(update, context):
 
 def stats(update, context):
     logger.info('Arrive /stats command "%s"', _log_message_data(update.effective_message))
-    sources = [GovBR(), G1Data(), WorldOMeterData()]
+    sources = [GovBR(), G1Data(), WorldOMeterData(), OMSData()]
     result = []
     for corona in sources:
         corona.refresh()
@@ -181,7 +181,7 @@ def general(update, context):
     logger.info('Arrive text message "%s"', _log_message_data(update.effective_message))
     region = update.message.text
     result = []
-    sources = [GovBR(region), G1Data(region), WorldOMeterData(region)]
+    sources = [GovBR(region), G1Data(region), WorldOMeterData(region), OMSData(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
@@ -233,7 +233,7 @@ def inline_query(update, context):
 
     logger.info('Query inline "%s"', update.inline_query)
 
-    sources = [G1Data(query), GovBR(query), WorldOMeterData(query)]
+    sources = [G1Data(query), GovBR(query), WorldOMeterData(query), OMSData(query)]
     results = []
 
     for corona in sources:
@@ -274,13 +274,14 @@ def refresh_data(context):
     G1Data.load()
     GovBR.load()
     WorldOMeterData.load()
+    OMSData.load()
 
     job_context = context.job.context
 
     # busca atualizações de dados nos data sources para informar no canal
     # e para guardar na tabela de casos, se o banco estiver ativo
     region = job_context["region"]
-    sources = [G1Data(region), GovBR(region), WorldOMeterData(region)]
+    sources = [GovBR(region), WorldOMeterData(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
