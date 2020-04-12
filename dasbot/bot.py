@@ -159,12 +159,10 @@ def help(update, context):
 Envie uma sigla de estado ou nome de cidade, para saber os confirmados nessa região
 Fontes de Dados: 
     Ministério da Saúde (https://coronavirus.saude.gov.br)
-    WorldOmeter (www.worldometers.info/coronavirus/)
+    WorldOmeter (https://www.worldometers.info/coronavirus/)
     brasi.io (https://brasil.io/dataset/covid19/caso) CC BY-SA 4.0
     OMS (https://dashboards-dev.sprinklr.com)
-    G1 (especiais.g1.globo.com/bemestar/coronavirus/mapa-coronavirus)
-Você também pode invocar os dados pelo bot em outros chats:  
-    inicie a mensagem lá com @corona_br_bot e a região na sequência""")
+    G1 (http://especiais.g1.globo.com/bemestar/coronavirus/mapa-coronavirus)""")
 
 
 def error(update, context):
