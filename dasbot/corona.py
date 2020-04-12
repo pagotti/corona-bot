@@ -1,13 +1,11 @@
+# -*- coding: utf-8 -*-
+
 """
 Modulo corona
 Classes que fornecem dados sobre o corona virus
 
 """
 
-import copy
-import json
-import re
-import pytz
 import io
 import unicodedata
 import matplotlib.pyplot as plt
@@ -15,12 +13,9 @@ import matplotlib.dates as mdates
 
 from matplotlib.ticker import MaxNLocator
 from datetime import datetime
-from dateutil import parser
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 from PIL import Image, ImageDraw, ImageFont
-from bs4 import BeautifulSoup
-from gzip import decompress
 
 
 br_ufs = {
@@ -62,7 +57,7 @@ def case_less_eq(left, right):
     return _normalize_case(left) == _normalize_case(right)
 
 
-def _http_get(url, headers={}, expected=200):
+def http_get(url, headers={}, expected=200):
     """return a request object from a url using http get
     """
     hdr = {
@@ -76,15 +71,6 @@ def _http_get(url, headers={}, expected=200):
         return response if response.getcode() == expected else None
     except URLError:
         return None
-
-
-def _database_script_matcher(tag):
-    """tag filter for match database.js
-    """
-    return tag.name == 'script' and \
-           tag.parent.name == 'body' and \
-           tag.has_attr('src') and \
-           tag['src'].startswith('http://plataforma.saude.gov.br/novocoronavirus/resources/scripts/database.js')
 
 
 class CoronaData(object):
@@ -104,10 +90,23 @@ class CoronaData(object):
     @property
     def description(self):
         if self._last_date:
-            return "{}: {} - Fonte: {} em {}".\
-                format(self.region, self._get_cases(), self.data_source, self.last_date.strftime("%d-%m-%Y %H:%M"))
+            categories = {
+                0: "🦠 Confirmados",
+                1: "💀 Óbitos",
+                2: "🙂 Recuperados"
+            }
+            data = self.get_data()
+            cases = []
+            for k, v in categories.items():
+                if data[k]:
+                    cases.append("{}: *{:n}*".format(v, data[k]))
+            if data[0] > 0 and data[1] > 0:
+                death_rate = data[1] / data[0]
+                cases.append("📈 Mortalidade: *{:2.1%}*".format(death_rate))
+            return "{} em {}\n{}\n".\
+                format(self.data_source, self.last_date.strftime("%d-%m-%Y %H:%M"), "\n".join(cases))
         else:
-            return "{}: Fonte: {} - Não há dados disponíveis".format(self.region, self.data_source)
+            return "Fonte: {} - Não há dados disponíveis\n".format(self.region, self.data_source)
 
     @property
     def last_date(self):
@@ -146,325 +145,6 @@ class CoronaData(object):
     def _load_data(self):
         """Carrega os dados e retorna True se houver uma nova versão disponível"""
         pass
-
-
-_g1_data = {}
-
-
-class G1Data(CoronaData):
-
-    @staticmethod
-    def categories(): return {
-        "cases": "Confirmados"
-    }
-
-    def __init__(self, region=None):
-        super().__init__()
-        self._data_source = "G1"
-        self._region = region if region else "BR"
-        self._data = None
-        self._match_complete = re.findall(r"([A-zÀ-ú\s]+)[-:\s]*([A-Z]{2})", self._region)
-        self._match_uf = re.findall(r"^[A-Z]{2}$", self._region)
-
-    def _match_region(self, city, state):
-        if self._region == "BR":
-            return True
-        elif self._match_uf:
-            return state == self._match_uf[0]
-        elif self._match_complete:
-            return state == self._match_complete[0][1] and case_less_eq(city, self._match_complete[0][0].strip())
-        else:
-            return case_less_eq(city,  self._region)
-
-    def get_data(self):
-        return [self._data.get("cases", 0) or 0, 0, 0]
-
-    def get_series(self):
-        cases = {}
-        for case in self._raw_data["docs"]:
-            if self._match_region(case["city_name"], case["state"]):
-                try:
-                    date = datetime.strptime("{}".format(case.get("date")), "%Y-%m-%d")
-                    if date <= datetime.today():
-                        cases[date] = cases.get(date, 0) + case.get("cases", 0)
-                except ValueError:
-                    pass
-
-        dates = [k for k in cases.keys()]
-        dates.sort()
-        result = {}
-        acc = 0
-        for d in dates:
-            acc = cases.get(d, 0) + acc
-            result[d] = [acc, 0, 0]
-
-        return result
-
-    def _get_cases(self):
-        cases = []
-        for k, v in G1Data.categories().items():
-            cases.append("{}: *{:n}*".format(v, self._data.get(k, 0) or 0))
-        return ", ".join(cases)
-
-    def _update_stats(self):
-        self._data = {}
-        for case in [k for k in self._raw_data["docs"]]:
-            if self._match_region(case["city_name"], case["state"]):
-                for k in G1Data.categories():
-                    self._data[k] = self._data.get(k, 0) + case.get(k, 0)
-        self._last_date = datetime.fromtimestamp(self._version, pytz.timezone("America/Sao_Paulo")) \
-            if self._data else None
-
-    def _load_data(self):
-        if not _g1_data:
-            G1Data().load()
-        data = copy.deepcopy(_g1_data)
-        if data:
-            date = re.findall(r"(\d{1,2})/(\d{1,2})/(\d{4}), às (\d{1,2}:\d{1,2})", data["updated_at"])[0]
-            self._version = parser.parse("{}-{}-{}T{}:00-0300".format(date[2], date[1], date[0], date[3])).timestamp()
-            self._raw_data = data
-            return True
-        return False
-
-    @staticmethod
-    def load():
-        global _g1_data
-        url = "https://s3.glbimg.com/v1/AUTH_f4000752a75040fdb48c79179f03325f/public/coronavirus/brazil-cases.json"
-        response = _http_get(url)
-        if response:
-            _g1_data = json.loads(response.read())
-
-
-_gov_br_data = {}
-
-
-class GovBR(CoronaData):
-
-    @staticmethod
-    def categories():
-        return {
-            "cases": "Confirmados",
-            "deaths": "Mortos"
-        }
-
-    def __init__(self, region=None):
-        super().__init__()
-        self._data_source = "Ministério da Saúde"
-        self._region = region if region else "BR"
-        self._gov = {}
-
-    def get_data(self):
-        """Nos dados do ministério não tem numeros de recuperados e para estados só tem confirmados"""
-        return [self._gov["cases"], self._gov.get("deaths", 0), 0]
-
-    def _get_cases(self):
-        cases = []
-        for k, v in GovBR.categories().items():
-            if k in self._gov:
-                cases.append("{}: *{:n}*".format(v, self._gov.get(k, 0)))
-        if self._gov.get("cases", 0) > 0:
-            death_rate = self._gov.get("deaths", 0) / self._gov.get("cases", 0)
-            cases.append("Mortalidade: *{:2.1%}*".format(death_rate))
-        return ", ".join(cases)
-
-    def _update_stats(self):
-        self._gov = {}
-        if self._raw_data:
-            region = br_ufs[self._region].get("name") if self._region in br_ufs else self._region
-            if region == "BR":
-                categories = {"cases": "total_confirmado", "deaths": "total_obitos"}
-                item = self._raw_data["br"]
-            else:
-                categories = {"cases": "qtd_confirmado", "deaths": "qtd_obito"}
-                item = [k for k in self._raw_data["states"] if k.get("nome") == region]
-
-            if item and len(item) == 1:
-                for k in GovBR.categories():
-                    if k in categories:
-                        value = str(item[0].get(categories[k], "0"))
-                        self._gov[k] = int(value.replace(".", ""))
-                date = parser.parse(item[0].get("updatedAt"))
-                self._last_date = date.astimezone(pytz.timezone("America/Sao_Paulo"))
-            else:
-                self._last_date = None
-
-    def _load_data(self):
-        if not _gov_br_data:
-            GovBR.load()
-        self._raw_data = copy.deepcopy(_gov_br_data)
-        if self._raw_data:
-            return True
-        return False
-    
-    @staticmethod
-    def load_json(path, key):
-        global _gov_br_data
-        # esse é o id atual, mas pode mudar com o tempo
-        app_id = "unAFkcaNDeXajurGB7LChj8SgQYS2ptm"
-        response = _http_get("https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/{}".format(path),
-                             {"x-parse-application-id": app_id})
-        if response:
-            data = json.loads(response.read())
-            _gov_br_data[key] = data["results"]
-
-    @staticmethod
-    def load():
-        GovBR.load_json("PortalGeral", "br")
-        GovBR.load_json("PortalMapa", "states")
-
-
-_world_data = {}
-
-
-class WorldOMeterData(CoronaData):
-
-    @staticmethod
-    def categories(): return {
-        "cases": "Confirmados",
-        "deaths": "Mortes",
-        "recovery": "Recuperados"
-    }
-
-    def __init__(self, region=None):
-        super().__init__()
-        self._data_source = "World-o-meter"
-        self._region = region if region else "BR"
-        self._data = {}
-
-    def get_data(self):
-        return [self._data.get(k, 0) or 0 for k in WorldOMeterData.categories().keys()]
-
-    def _get_cases(self):
-        cases = []
-        for k, v in WorldOMeterData.categories().items():
-            if k in self._data:
-                cases.append("{}: *{:n}*".format(v, self._data.get(k, 0)))
-        if self._data.get("cases", 0) > 0:
-            death_rate = self._data.get("deaths", 0) / self._data.get("cases", 0)
-            cases.append("Mortalidade: *{:2.1%}*".format(death_rate))
-        return ", ".join(cases)
-
-    def _update_stats(self):
-        if self._region == "BR":
-            for k in WorldOMeterData.categories():
-                self._data[k] = int(self._raw_data[k].replace(",", ""))
-            self._version = parser.parse(self._raw_data["lastUpdated"]).timestamp()
-            self._last_date = datetime.fromtimestamp(self._version, pytz.timezone("America/Sao_Paulo"))
-
-    def _load_data(self):
-        if not _world_data:
-            WorldOMeterData.load()
-        self._raw_data = copy.deepcopy(_world_data)
-        if self._raw_data:
-            return True
-        return False
-
-    @staticmethod
-    def _last_update_matcher(tag):
-        return tag.name == 'div' and \
-               tag.text.startswith("Last updated")
-
-    @staticmethod
-    def _brazil_matcher(tag):
-        return tag.name == 'a' and \
-               tag.has_attr('href') and \
-               tag['href'] == 'country/brazil/'
-
-    @staticmethod
-    def load():
-        global _world_data
-        response = _http_get("https://www.worldometers.info/coronavirus/")
-        if response:
-            main_page = BeautifulSoup(response, 'html.parser')
-            last_date_tag = main_page.find(WorldOMeterData._last_update_matcher)
-            if last_date_tag:
-                match = re.findall(r"(\w+\s\d+,\s\d+,\s\d+:\d+\sGMT)$", last_date_tag.text)
-                if match:
-                    _world_data["lastUpdated"] = match[0]
-            data_tag = main_page.find(WorldOMeterData._brazil_matcher)
-            cols = []
-            for el in data_tag.parent.find_next_siblings("td"):
-                cols.append(el.text)
-            if cols:
-                _world_data["cases"] = cols[0]
-                _world_data["deaths"] = cols[2]
-                _world_data["recovery"] = cols[4]
-
-
-_oms_data = {}
-
-
-class OMSData(CoronaData):
-
-    @staticmethod
-    def categories():
-        return {
-            "cases": "Confirmados",
-            "deaths": "Mortes"
-        }
-
-    def __init__(self, region=None):
-        super().__init__()
-        self._data_source = "OMS"
-        self._region = region if region else "BR"
-        self._oms = {}
-
-    def get_data(self):
-        return [self._oms.get("cases", 0), self._oms.get("deaths", 0), 0]
-
-    def get_series(self):
-        cases = {}
-        if self._raw_data and self._region == "BR":
-            for data in self._raw_data:
-                date = datetime.fromtimestamp(data[0] / 1000).astimezone(pytz.timezone("America/Sao_Paulo")).date()
-                if date <= datetime.today():
-                    cases[date] = {"c": data[6], "d": data[4]}
-
-        dates = [k for k in cases.keys()]
-        dates.sort()
-        result = {}
-        for d in dates:
-            result[d] = [cases[d].get("c", 0), cases[d].get("d", 0), 0]
-
-        return result
-
-    def _get_cases(self):
-        cases = []
-        for k, v in OMSData.categories().items():
-            cases.append("{}: *{:n}*".format(v, self._oms.get(k, 0)))
-        if self._oms.get("cases", 0) > 0:
-            death_rate = self._oms.get("deaths", 0) / self._oms.get("cases", 0)
-            cases.append("Mortalidade: *{:2.1%}*".format(death_rate))
-        return ", ".join(cases)
-
-    def _update_stats(self):
-        self._oms = {}
-        if self._raw_data and self._region == "BR":
-            categories = {"cases": 6, "deaths": 4}
-            for k, v in categories.items():
-                self._oms[k] = self._raw_data[-1][v]
-            date = datetime.fromtimestamp(self._raw_data[-1][0] / 1000)
-            self._last_date = date.astimezone(pytz.timezone("America/Sao_Paulo"))
-        else:
-            self._last_date = None
-
-    def _load_data(self):
-        if not _oms_data:
-            OMSData.load()
-        self._raw_data = copy.deepcopy(_oms_data)
-        if self._raw_data:
-            return True
-        return False
-
-    @staticmethod
-    def load():
-        global _oms_data
-        response = _http_get("https://dashboards-dev.sprinklr.com/data/9043/global-covid19-who-gis.json",
-                             {"Accept-Encoding": "gzip"})
-        if response:
-            response_data = decompress(response.read())
-            data = json.loads(response_data.decode("utf-8"))
-            _oms_data = [d for d in data["rows"] if d[1] == "BR"]
 
 
 class SeriesChart(object):

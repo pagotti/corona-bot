@@ -16,7 +16,12 @@ from uuid import uuid4
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
 from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode
 
-from dasbot.corona import G1Data, GovBR, WorldOMeterData, OMSData, SeriesChart, DataPanel
+from dasbot.corona import SeriesChart, DataPanel
+from dasbot.g1 import G1Data
+from dasbot.gov_br import GovBR
+from dasbot.world import WorldOMeterData
+from dasbot.oms import OMSData
+from dasbot.brasil_io import BrasilIOData
 from dasbot.db import JobCacheRepo, BotLogRepo, CasesRepo
 
 
@@ -152,7 +157,13 @@ def help(update, context):
     /listen : observa os dados de uma região a cada X minutos (experimental)
     /mute : para de observar a região programada com o /listen
 Envie uma sigla de estado ou nome de cidade, para saber os confirmados nessa região
-Você pode invocar os dados pelo bot em outros chats:  
+Fontes de Dados: 
+    Ministério da Saúde (https://coronavirus.saude.gov.br)
+    WorldOmeter (www.worldometers.info/coronavirus/)
+    brasi.io (https://brasil.io/dataset/covid19/caso) CC BY-SA 4.0
+    OMS (https://dashboards-dev.sprinklr.com)
+    G1 (especiais.g1.globo.com/bemestar/coronavirus/mapa-coronavirus)
+Você também pode invocar os dados pelo bot em outros chats:  
     inicie a mensagem lá com @corona_br_bot e a região na sequência""")
 
 
@@ -163,7 +174,7 @@ def error(update, context):
 
 def stats(update, context):
     logger.info('Arrive /stats command "%s"', _log_message_data(update.effective_message))
-    sources = [GovBR(), G1Data(), WorldOMeterData(), OMSData()]
+    sources = [GovBR(), BrasilIOData(), WorldOMeterData(), OMSData(), G1Data()]
     result = []
     for corona in sources:
         corona.refresh()
@@ -181,15 +192,16 @@ def general(update, context):
     logger.info('Arrive text message "%s"', _log_message_data(update.effective_message))
     region = update.message.text
     result = []
-    sources = [GovBR(region), G1Data(region), WorldOMeterData(region), OMSData(region)]
+    sources = [GovBR(region), G1Data(region), WorldOMeterData(region), OMSData(region), BrasilIOData(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
-            result.append(corona)
+            result.append(corona.description)
 
     if result:
-        panel = DataPanel(*result)
-        update.message.reply_photo(photo=panel.image())
+        # panel = DataPanel(*result)
+        # update.message.reply_photo(photo=panel.image())
+        update.message.reply_markdown("Região: *{}*\n{}".format(region, "\n".join(result)))
     else:
         update.message.reply_text("""Região não reconhecida ou sem dados. 
 Envie a sigla do estado em maiúsculas, nomes de cidade com acentos. 
@@ -233,7 +245,7 @@ def inline_query(update, context):
 
     logger.info('Query inline "%s"', update.inline_query)
 
-    sources = [G1Data(query), GovBR(query), WorldOMeterData(query), OMSData(query)]
+    sources = [G1Data(query), GovBR(query), WorldOMeterData(query), OMSData(query), BrasilIOData(query)]
     results = []
 
     for corona in sources:
@@ -255,7 +267,7 @@ def unknown(update, context):
 
 def on_change_notifier(context):
     region = context.job.context["region"]
-    sources = [G1Data(region)]
+    sources = [BrasilIOData(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
@@ -275,13 +287,14 @@ def refresh_data(context):
     GovBR.load()
     WorldOMeterData.load()
     OMSData.load()
+    BrasilIOData.load()
 
     job_context = context.job.context
 
     # busca atualizações de dados nos data sources para informar no canal
     # e para guardar na tabela de casos, se o banco estiver ativo
     region = job_context["region"]
-    sources = [GovBR(region), WorldOMeterData(region)]
+    sources = [GovBR(region), WorldOMeterData(region), BrasilIOData(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
