@@ -10,7 +10,7 @@ from dateutil import parser
 from dasbot.corona import CoronaData, http_get, case_less_eq
 
 
-_raw_data = {}
+_raw_data = []
 
 
 class BrasilIOData(CoronaData):
@@ -65,7 +65,14 @@ class BrasilIOData(CoronaData):
     @staticmethod
     def load():
         global _raw_data
-        response = http_get("https://brasil.io/api/dataset/covid19/caso/data?is_last=true")
-        if response:
-            data = json.loads(response.read())
-            _raw_data = data["results"]
+        raw_data = []
+        next_page = "https://brasil.io/api/dataset/covid19/caso/data?is_last=true"
+        while next_page:
+            response = http_get(next_page)
+            if response:
+                data = json.loads(response.read())
+                raw_data.extend(data["results"])
+                next_page = data.get("next")
+            else:
+                break
+        _raw_data = raw_data

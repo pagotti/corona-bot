@@ -172,16 +172,15 @@ def error(update, context):
 
 def stats(update, context):
     logger.info('Arrive /stats command "%s"', _log_message_data(update.effective_message))
-    sources = [GovBR(), BrasilIOData(), WorldOMeterData(), OMSData(), G1Data()]
+    sources = [GovBR(), G1Data(), WorldOMeterData(), OMSData(), BrasilIOData()]
     result = []
     for corona in sources:
         corona.refresh()
         if corona.last_date:
-            result.append(corona)
+            result.append(corona.description)
 
     if result:
-        panel = DataPanel(*result)
-        update.message.reply_photo(photo=panel.image())
+        update.message.reply_markdown("Região: *{}*\n{}".format("BR", "\n".join(result)))
     else:
         update.message.reply_text("Dados não disponíveis. Tente mais tarde")
 
@@ -197,8 +196,6 @@ def general(update, context):
             result.append(corona.description)
 
     if result:
-        # panel = DataPanel(*result)
-        # update.message.reply_photo(photo=panel.image())
         update.message.reply_markdown("Região: *{}*\n{}".format(region, "\n".join(result)))
     else:
         update.message.reply_text("""Região não reconhecida ou sem dados. 
