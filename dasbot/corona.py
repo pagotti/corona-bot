@@ -89,6 +89,9 @@ class CoronaData(object):
 
     @property
     def description(self):
+        return self.get_description()
+
+    def get_description(self, changes=None):
         if self._last_date:
             categories = {
                 0: "🦠 Confirmados",
@@ -99,14 +102,19 @@ class CoronaData(object):
             cases = []
             for k, v in categories.items():
                 if data[k]:
-                    cases.append("{}: *{:n}*".format(v, data[k]))
+                    description = "{}: *{:d}*".format(v, data[k])
+                    if changes and changes[k] > 0:
+                        description = "{} 🔺 +{:d}".format(description, changes[k])
+                    cases.append(description)
             if data[0] > 0 and data[1] > 0:
                 death_rate = data[1] / data[0]
-                cases.append("📈 Mortalidade: *{:2.1%}*".format(death_rate))
-            return "{} em {}\n{}\n".\
-                format(self.data_source, self.last_date.strftime("%d-%m-%Y %H:%M"), "\n".join(cases))
+                cases.append("📈 Letalidade: *{:2.1%}*".format(death_rate))
+            result = "{} em {}\n{}\n".format(self.data_source,
+                                             self.last_date.strftime("%d-%m-%Y %H:%M"),
+                                             "\n".join(cases))
         else:
-            return "Fonte: {} - Não há dados disponíveis\n".format(self.region, self.data_source)
+            result = "Fonte: {} - Não há dados disponíveis\n".format(self.region, self.data_source)
+        return result
 
     @property
     def last_date(self):

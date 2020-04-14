@@ -51,8 +51,7 @@ class BrasilIOData(CoronaData):
                 for k in BrasilIOData.categories():
                     self._data[k] = case.get(k, 0) + self._data.get(k, 0)
         if self._data:
-            date = parser.parse(self._raw_data[0]["date"])
-            self._last_date = date.astimezone(pytz.timezone("America/Sao_Paulo"))
+            self._last_date = parser.parse(self._raw_data[0]["date"])
 
     def _load_data(self):
         if not _raw_data:
@@ -66,7 +65,7 @@ class BrasilIOData(CoronaData):
     def load():
         global _raw_data
         raw_data = []
-        next_page = "https://brasil.io/api/dataset/covid19/caso/data?is_last=true"
+        next_page = "https://brasil.io/api/dataset/covid19/caso/data?is_last=True"
         while next_page:
             response = http_get(next_page)
             if response:

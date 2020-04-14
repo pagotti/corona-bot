@@ -267,14 +267,16 @@ def on_change_notifier(context):
         corona.refresh()
         if corona.last_date:
             last = context.job.context["last"]
-            if not context.job.context.get("new", True):
-                changes = True
+            if last and sum(last) > 0:
+                changes = [i - j for i, j in zip(corona.get_data(), last)]
             else:
-                changes = [1 for i, j in zip(corona.get_data(), last) if i > j]
-            if changes or not last:
-                context.job.context["last"] = corona.get_data()
-                context.bot.send_message(context.job.context["chat_id"], text=corona.description,
+                changes = [0, 0, 0]
+            if sum(changes) > 0 or not context.job.context.get("new", True):
+                description = "Região: *{}*\n{}".format(region, corona.get_description(changes))
+                context.bot.send_message(chat_id=context.job.context["chat_id"],
+                                         text=description,
                                          parse_mode=ParseMode.MARKDOWN)
+            context.job.context["last"] = corona.get_data()
 
 
 def refresh_data(context):
@@ -298,11 +300,12 @@ def refresh_data(context):
                 job_context[corona.data_source] = {"last": corona_data}
             else:
                 last = job_context[corona.data_source]["last"]
-                changes = [1 for i, j in zip(corona_data, last) if i > j]
-                if changes:
+                changes = [i - j for i, j in zip(corona_data, last)]
+                if sum(changes) > 0:
                     job_context[corona.data_source]["last"] = corona_data
                     if job_context["chat_id"]:
-                        context.bot.send_message(job_context["chat_id"], text=corona.description,
+                        context.bot.send_message(job_context["chat_id"],
+                                                 text=corona.get_description(changes),
                                                  parse_mode=ParseMode.MARKDOWN)
                     if use_db:
                         repo = CasesRepo()
