@@ -70,7 +70,7 @@ class OMSData(CoronaData):
     def load():
         global _oms_data
         response = http_get("https://dashboards-dev.sprinklr.com/data/9043/global-covid19-who-gis.json",
-                             {"Accept-Encoding": "gzip"})
+                            {"Accept-Encoding": "gzip"})
         if response:
             response_data = decompress(response.read())
             data = json.loads(response_data.decode("utf-8"))

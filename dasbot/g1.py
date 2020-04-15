@@ -18,7 +18,9 @@ class G1Data(CoronaData):
 
     @staticmethod
     def categories(): return {
-        "cases": "🦠 Confirmados"
+        "cases": "🦠 Confirmados",
+        "deaths": "💀 Óbitos",
+        "recovery": "🙂 Recuperados"
     }
 
     def __init__(self, region=None):
@@ -29,27 +31,29 @@ class G1Data(CoronaData):
         self._match_complete = re.findall(r"([A-zÀ-ú\s]+)[-:\s]*([A-Z]{2})", self._region)
         self._match_uf = re.findall(r"^[A-Z]{2}$", self._region)
 
-    def _match_region(self, city, state):
+    def _match_region(self, rec):
         if self._region == "BR":
             return True
-        elif self._match_uf:
-            return state == self._match_uf[0]
-        elif self._match_complete:
-            return state == self._match_complete[0][1] and case_less_eq(city, self._match_complete[0][0].strip())
-        else:
-            return case_less_eq(city,  self._region)
+        elif self._match_uf and "state" in rec:
+            return rec["state"] == self._match_uf[0]
+        elif self._match_complete and "state" in rec and "city_name" in rec:
+            return rec["state"] == self._match_complete[0][1] and \
+                   case_less_eq(rec["city_name"], self._match_complete[0][0].strip())
+        elif "city_name" in rec:
+            return case_less_eq(rec["city_name"],  self._region)
+        return False
 
     def get_data(self):
-        return [self._data.get("cases", 0) or 0, 0, 0]
+        return [self._data.get(k, 0) or 0 for k in G1Data.categories().keys()]
 
     def get_series(self):
         cases = {}
         for case in self._raw_data["docs"]:
-            if self._match_region(case["city_name"], case["state"]):
+            if self._match_region(case):
                 try:
                     date = datetime.strptime("{}".format(case.get("date")), "%Y-%m-%d")
                     if date <= datetime.today():
-                        cases[date] = cases.get(date, 0) + case.get("cases", 0)
+                        cases[date] = cases.get(date, 0) + (case.get("cases", 0) or 0)
                 except ValueError:
                     pass
 
@@ -66,9 +70,9 @@ class G1Data(CoronaData):
     def _update_stats(self):
         self._data = {}
         for case in [k for k in self._raw_data["docs"]]:
-            if self._match_region(case["city_name"], case["state"]):
+            if self._match_region(case):
                 for k in G1Data.categories():
-                    self._data[k] = self._data.get(k, 0) + case.get(k, 0)
+                    self._data[k] = self._data.get(k, 0) + (case.get(k, 0) or 0)
         self._last_date = datetime.fromtimestamp(self._version, pytz.timezone("America/Sao_Paulo")) \
             if self._data else None
 
@@ -86,7 +90,7 @@ class G1Data(CoronaData):
     @staticmethod
     def load():
         global _g1_data
-        url = "https://s3.glbimg.com/v1/AUTH_f4000752a75040fdb48c79179f03325f/public/coronavirus/brazil-cases.json"
+        url = "https://api.especiaisg1.globo/api/eventos/brasil/"
         response = http_get(url)
         if response:
             _g1_data = json.loads(response.read())
