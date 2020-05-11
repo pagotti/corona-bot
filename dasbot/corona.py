@@ -50,7 +50,10 @@ br_ufs = {
 
 
 def _normalize_case(text):
-    return unicodedata.normalize("NFKD", text.casefold())
+    if isinstance(text, str):
+        return unicodedata.normalize("NFKD", text.casefold())
+    else:
+        return None
 
 
 def case_less_eq(left, right):
