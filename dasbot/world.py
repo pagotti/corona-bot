@@ -17,11 +17,7 @@ _world_data = {}
 class WorldOMeterData(CoronaData):
 
     @staticmethod
-    def categories(): return {
-        "cases": "🦠 Confirmados",
-        "deaths": "💀 Óbitos",
-        "recovery": "🙂 Recuperados"
-    }
+    def categories(): return ["cases", "deaths", "recovery"]
 
     def __init__(self, region=None):
         super().__init__()
@@ -30,7 +26,7 @@ class WorldOMeterData(CoronaData):
         self._data = {}
 
     def get_data(self):
-        return [self._data.get(k, 0) or 0 for k in WorldOMeterData.categories().keys()]
+        return [self._data.get(k, 0) or 0 for k in WorldOMeterData.categories()]
 
     def _update_stats(self):
         if self._region == "BR":

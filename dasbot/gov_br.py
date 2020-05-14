@@ -14,13 +14,6 @@ _gov_br_data = {}
 
 class GovBR(CoronaData):
 
-    @staticmethod
-    def categories():
-        return {
-            "cases": "🦠 Confirmados",
-            "deaths": "💀 Óbitos"
-        }
-
     def __init__(self, region=None):
         super().__init__()
         self._data_source = "Ministério da Saúde"
@@ -29,28 +22,27 @@ class GovBR(CoronaData):
 
     def get_data(self):
         """Nos dados do ministério não tem numeros de recuperados e para estados só tem confirmados"""
-        return [self._gov["cases"], self._gov.get("deaths", 0), 0]
+        return [self._gov.get("cases", 0), self._gov.get("deaths", 0), self._gov.get("recovered", 0)]
 
     def _update_stats(self):
         self._gov = {}
         if self._raw_data:
-            region = br_ufs[self._region].get("name") if self._region in br_ufs else self._region
+            date = parser.parse(self._raw_data["br"].get("dt_updated"))
+            self._last_date = date.astimezone(pytz.timezone("America/Sao_Paulo"))
+            region = self._region
             if region == "BR":
-                categories = {"cases": "total_confirmado", "deaths": "total_obitos"}
                 item = self._raw_data["br"]
+                self._gov["cases"] = int(item.get("confirmados").get("total", "0"))
+                self._gov["recovered"] = int(item.get("confirmados").get("recuperados", "0"))
+                self._gov["deaths"] = int(item.get("obitos").get("total", "0"))
             else:
-                categories = {"cases": "qtd_confirmado", "deaths": "qtd_obito"}
+                categories = {"cases": "casosAcumulado", "deaths": "obitosAcumulado"}
                 item = [k for k in self._raw_data["states"] if k.get("nome") == region]
-
-            if item and len(item) == 1:
-                for k in GovBR.categories():
-                    if k in categories:
-                        value = str(item[0].get(categories[k], "0"))
-                        self._gov[k] = int(value.replace(".", ""))
-                date = parser.parse(item[0].get("updatedAt"))
-                self._last_date = date.astimezone(pytz.timezone("America/Sao_Paulo"))
-            else:
-                self._last_date = None
+                if item and len(item) == 1:
+                    for k in categories:
+                        self._gov[k] = item[0].get(categories[k], 0)
+                else:
+                    self._last_date = None
 
     def _load_data(self):
         if not _gov_br_data:
@@ -61,17 +53,19 @@ class GovBR(CoronaData):
         return False
 
     @staticmethod
-    def load_json(path, key):
-        global _gov_br_data
+    def load_json(path):
         # esse é o id atual, mas pode mudar com o tempo
         app_id = "unAFkcaNDeXajurGB7LChj8SgQYS2ptm"
         response = http_get("https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/{}".format(path),
                              {"x-parse-application-id": app_id})
         if response:
-            data = json.loads(response.read())
-            _gov_br_data[key] = data["results"]
+            return json.loads(response.read())
 
     @staticmethod
     def load():
-        GovBR.load_json("PortalGeral", "br")
-        GovBR.load_json("PortalMapa", "states")
+        global _gov_br_data
+        data = GovBR.load_json("PortalGeralApi")
+        _gov_br_data["br"] = data
+        data = GovBR.load_json("PortalEstado")
+        _gov_br_data["states"] = data
+

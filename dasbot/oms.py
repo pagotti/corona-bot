@@ -15,13 +15,6 @@ _oms_data = {}
 
 class OMSData(CoronaData):
 
-    @staticmethod
-    def categories():
-        return {
-            "cases": "🦠 Confirmados",
-            "deaths": "💀 Óbitos"
-        }
-
     def __init__(self, region=None):
         super().__init__()
         self._data_source = "OMS"

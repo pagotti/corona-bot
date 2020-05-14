@@ -17,11 +17,8 @@ _g1_data = {}
 class G1Data(CoronaData):
 
     @staticmethod
-    def categories(): return {
-        "cases": "🦠 Confirmados",
-        "deaths": "💀 Óbitos",
-        "recovery": "🙂 Recuperados"
-    }
+    def categories():
+        return ["cases", "deaths", "recovery"]
 
     def __init__(self, region=None):
         super().__init__()
@@ -44,7 +41,7 @@ class G1Data(CoronaData):
         return False
 
     def get_data(self):
-        return [self._data.get(k, 0) or 0 for k in G1Data.categories().keys()]
+        return [self._data.get(k, 0) or 0 for k in G1Data.categories()]
 
     def get_series(self):
         cases = {}

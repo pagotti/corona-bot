@@ -17,10 +17,7 @@ class BrasilIOData(CoronaData):
 
     @staticmethod
     def categories():
-        return {
-            "confirmed": "🦠 Confirmados",
-            "deaths": "💀 Óbitos"
-        }
+        return ["confirmed", "deaths"]
 
     def __init__(self, region=None):
         super().__init__()
