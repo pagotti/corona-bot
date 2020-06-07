@@ -18,7 +18,6 @@ from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMod
 
 from dasbot.corona import SeriesChart, DataPanel
 from dasbot.g1 import G1Data
-from dasbot.gov_br import GovBR
 from dasbot.world import WorldOMeterData
 from dasbot.oms import OMSData
 from dasbot.brasil_io import BrasilIOData
@@ -172,7 +171,7 @@ def error(update, context):
 
 def stats(update, context):
     logger.info('Arrive /stats command "%s"', _log_message_data(update.effective_message))
-    sources = [GovBR(), G1Data(), WorldOMeterData(), OMSData(), BrasilIOData()]
+    sources = [G1Data(), WorldOMeterData(), OMSData(), BrasilIOData()]
     result = []
     for corona in sources:
         corona.refresh()
@@ -189,7 +188,7 @@ def general(update, context):
     logger.info('Arrive text message "%s"', _log_message_data(update.effective_message))
     region = update.message.text
     result = []
-    sources = [GovBR(region), G1Data(region), WorldOMeterData(region), OMSData(region), BrasilIOData(region)]
+    sources = [G1Data(region), WorldOMeterData(region), OMSData(region), BrasilIOData(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
@@ -240,7 +239,7 @@ def inline_query(update, context):
 
     logger.info('Query inline "%s"', update.inline_query)
 
-    sources = [G1Data(query), GovBR(query), WorldOMeterData(query), OMSData(query), BrasilIOData(query)]
+    sources = [G1Data(query), WorldOMeterData(query), OMSData(query), BrasilIOData(query)]
     results = []
 
     for corona in sources:
@@ -281,7 +280,6 @@ def on_change_notifier(context):
 
 def refresh_data(context):
     G1Data.load()
-    GovBR.load()
     WorldOMeterData.load()
     OMSData.load()
     BrasilIOData.load()
@@ -291,7 +289,7 @@ def refresh_data(context):
     # busca atualizações de dados nos data sources para informar no canal
     # e para guardar na tabela de casos, se o banco estiver ativo
     region = job_context["region"]
-    sources = [GovBR(region), WorldOMeterData(region), BrasilIOData(region)]
+    sources = [WorldOMeterData(region), BrasilIOData(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
