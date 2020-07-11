@@ -214,10 +214,13 @@ class SeriesChart(object):
                         else:
                             y_axis[i].append(0)
                 plt.plot(x_axis, y_axis[i], label=self.regions[i])
-            plt.title("Contaminação pelo COVID-19 : Confirmados - Fonte: {}".format(self.source))
+            plt.title("COVID-19 : Confirmados - Fonte: {}".format(self.source))
 
         ax = plt.gca()
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%d-%b"))
+        locator = mdates.AutoDateLocator(minticks=3, maxticks=7)
+        ax.xaxis.set_major_locator(locator)
+        ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(locator))
+        ax.yaxis.get_major_formatter().set_scientific(False)
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
         plt.xlabel('Data')

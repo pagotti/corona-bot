@@ -3,9 +3,9 @@
 import copy
 import json
 import re
-import pytz
 
 from dateutil import parser
+from datetime import datetime
 
 from dasbot.corona import CoronaData, http_get, case_less_eq
 
@@ -29,6 +29,34 @@ class BrasilIOData(CoronaData):
 
     def get_data(self):
         return [self._data.get("confirmed", 0), self._data.get("deaths", 0), 0]
+
+    def get_series(self):
+        series = []
+        if self._region != "BR":
+            for case in self._raw_data:
+                if self._match_region(case):
+                    region_code = case.get("city_ibge_code", 0)
+                    series = BrasilIOData.load_region_series(region_code)
+                    break
+        else:
+            series = BrasilIOData.load_series()
+
+        cases = {}
+        for case in series:
+            try:
+                date = parser.parse(case["date"])
+                if date <= datetime.today():
+                    cases[date] = cases.get(date, 0) + (case.get("confirmed", 0) or 0)
+            except ValueError:
+                pass
+
+        result = {}
+        dates = [k for k in cases.keys()]
+        dates.sort()
+        for d in dates:
+            result[d] = [cases.get(d, 0), 0, 0]
+
+        return result
 
     def _match_region(self, rec):
         if self._region == "BR":
@@ -57,6 +85,34 @@ class BrasilIOData(CoronaData):
         if self._raw_data:
             return True
         return False
+
+    @staticmethod
+    def load_region_series(region_code):
+        result_data = []
+        next_page = "https://brasil.io/api/dataset/covid19/caso/data?city_ibge_code={}".format(region_code)
+        while next_page:
+            response = http_get(next_page)
+            if response:
+                data = json.loads(response.read())
+                result_data.extend(data["results"])
+                next_page = data.get("next")
+            else:
+                break
+        return result_data
+
+    @staticmethod
+    def load_series():
+        result_data = []
+        next_page = "https://brasil.io/api/dataset/covid19/caso/data?place_type=state"
+        while next_page:
+            response = http_get(next_page)
+            if response:
+                data = json.loads(response.read())
+                result_data.extend(data["results"])
+                next_page = data.get("next")
+            else:
+                break
+        return result_data
 
     @staticmethod
     def load():

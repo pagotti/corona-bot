@@ -17,7 +17,6 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Inlin
 from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode
 
 from dasbot.corona import SeriesChart, DataPanel
-from dasbot.g1 import G1Data
 from dasbot.world import WorldOMeterData
 from dasbot.oms import OMSData
 from dasbot.brasil_io import BrasilIOData
@@ -157,11 +156,9 @@ def help(update, context):
     /mute : para de observar a região programada com o /listen
 Envie uma sigla de estado ou nome de cidade, para saber os confirmados nessa região
 Fontes de Dados: 
-    Ministério da Saúde (https://coronavirus.saude.gov.br)
     WorldOmeter (https://www.worldometers.info/coronavirus/)
-    brasi.io (https://brasil.io/dataset/covid19/caso) CC BY-SA 4.0
-    OMS (https://dashboards-dev.sprinklr.com)
-    G1 (http://especiais.g1.globo.com/bemestar/coronavirus/mapa-coronavirus)""")
+    Brasil.io (https://brasil.io/dataset/covid19/caso) CC BY-SA 4.0
+    OMS (https://dashboards-dev.sprinklr.com)""")
 
 
 def error(update, context):
@@ -171,7 +168,7 @@ def error(update, context):
 
 def stats(update, context):
     logger.info('Arrive /stats command "%s"', _log_message_data(update.effective_message))
-    sources = [G1Data(), WorldOMeterData(), OMSData(), BrasilIOData()]
+    sources = [WorldOMeterData(), OMSData(), BrasilIOData()]
     result = []
     for corona in sources:
         corona.refresh()
@@ -188,7 +185,7 @@ def general(update, context):
     logger.info('Arrive text message "%s"', _log_message_data(update.effective_message))
     region = update.message.text
     result = []
-    sources = [G1Data(region), WorldOMeterData(region), OMSData(region), BrasilIOData(region)]
+    sources = [WorldOMeterData(region), OMSData(region), BrasilIOData(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
@@ -206,7 +203,7 @@ def _get_chart(regions):
     sources = []
     if regions:
         for region in regions:
-            corona = G1Data(region.strip())
+            corona = BrasilIOData(region.strip())
             corona.refresh()
             sources.append(corona)
 
@@ -239,7 +236,7 @@ def inline_query(update, context):
 
     logger.info('Query inline "%s"', update.inline_query)
 
-    sources = [G1Data(query), WorldOMeterData(query), OMSData(query), BrasilIOData(query)]
+    sources = [WorldOMeterData(query), OMSData(query), BrasilIOData(query)]
     results = []
 
     for corona in sources:
@@ -279,7 +276,6 @@ def on_change_notifier(context):
 
 
 def refresh_data(context):
-    G1Data.load()
     WorldOMeterData.load()
     OMSData.load()
     BrasilIOData.load()
