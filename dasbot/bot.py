@@ -278,14 +278,13 @@ def on_change_notifier(context):
 def refresh_data(context):
     WorldOMeterData.load()
     OMSData.load()
-    BrasilIOData.load()
 
     job_context = context.job.context
 
     # busca atualizações de dados nos data sources para informar no canal
     # e para guardar na tabela de casos, se o banco estiver ativo
     region = job_context["region"]
-    sources = [WorldOMeterData(region), BrasilIOData(region)]
+    sources = [WorldOMeterData(region)]
     for corona in sources:
         corona.refresh()
         if corona.last_date:
